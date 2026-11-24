@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "com.raharjatech.velopos",
-        "sha256_cert_fingerprints": ["68:A7:8E:61:2C:F9:91:F4:6F:BB:33:F1:D3:D7:8B:44:92:2E:A4:B8:A2:4C:2B:51:31:F8:58:FE:A1:0B:8A:76"]
+        "sha256_cert_fingerprints": ["5F:BC:0D:40:37:69:64:5A:4D:5A:97:05:AC:A7:35:6B:5A:56:ED:78:8D:9F:40:69:5B:66:3A:51:8C:49:51:FB"]
       }
     }]
