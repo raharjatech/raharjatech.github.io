@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" translate="no" class="notranslate">
 <head>
   <meta charset="UTF-8" />
+  <meta name="google" content="notranslate" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#0B1F3A" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -980,6 +981,23 @@
   </div>
 </div>
 
+<!-- MODAL: KONFIRMASI KELUAR -->
+<div class="modal-overlay" id="exitModal">
+  <div class="modal-sheet" style="max-width:380px;">
+    <div class="modal-header">
+      <h3 style="margin:0;font-size:16px;font-weight:800;">Keluar dari Velo POS?</h3>
+      <button class="sp-back" onclick="cancelExit()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:18px;">
+      <p style="margin:0;font-size:14px;color:var(--text-2);line-height:1.5;">Anda yakin ingin keluar dari aplikasi Velo POS?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="flex:1;" onclick="cancelExit()">Tidak</button>
+      <button class="btn btn-danger" style="flex:1;background:var(--red-600);color:#fff;border:none;" onclick="confirmExit()">Ya, Keluar</button>
+    </div>
+  </div>
+</div>
+
 <div id="printArea"></div>
 <div class="toast" id="toast"></div>
 
@@ -1613,6 +1631,92 @@
   function dl(c, name, type) { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([c],{type})); a.download=name; a.click(); }
 
   if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
+  // --- ANDROID BACK BUTTON & NAVIGATION HISTORY ---
+  let currentTab = 'beranda';
+  let allowRealExit = false;
+
+  // Trap initial history state so pressing Back on Home doesn't immediately close app
+  try { window.history.replaceState({ velo: 'root' }, ''); window.history.pushState({ velo: 'app' }, ''); } catch(e) {}
+
+  const _origSwitchTab = switchTab;
+  switchTab = function(tab) {
+    if (tab !== currentTab) {
+      currentTab = tab;
+      if (tab !== 'beranda') {
+        try { window.history.pushState({ velo: 'tab', tab }, ''); } catch(e) {}
+      }
+    }
+    _origSwitchTab(tab);
+  };
+
+  const _origOpenModal = openModal;
+  openModal = function(id) {
+    if (id !== 'exitModal') {
+      try { window.history.pushState({ velo: 'modal', id }, ''); } catch(e) {}
+    }
+    _origOpenModal(id);
+  };
+
+  // Patch subpage openers to push history
+  ['openQuickEntry', 'openFastPOS', 'openReportsPage', 'openAccountsPage', 'openUpgradePage'].forEach(fnName => {
+    const orig = window[fnName];
+    if (typeof orig === 'function') {
+      window[fnName] = function(...args) {
+        try { window.history.pushState({ velo: 'subpage', fn: fnName }, ''); } catch(e) {}
+        return orig.apply(this, args);
+      };
+    }
+  });
+
+  window.addEventListener('popstate', (e) => {
+    if (allowRealExit) return;
+
+    // 1. If exit modal is open, close it
+    const exitEl = document.getElementById('exitModal');
+    if (exitEl && exitEl.classList.contains('open')) {
+      exitEl.classList.remove('open');
+      try { window.history.pushState({ velo: 'app' }, ''); } catch(err) {}
+      return;
+    }
+
+    // 2. If any other modal is open, close the topmost modal
+    const openModals = Array.from(document.querySelectorAll('.modal-overlay.open'));
+    if (openModals.length > 0) {
+      openModals[openModals.length - 1].classList.remove('open');
+      return;
+    }
+
+    // 3. If any subpage is open, close the topmost subpage
+    const openSubs = Array.from(document.querySelectorAll('.subpage.open'));
+    if (openSubs.length > 0) {
+      openSubs[openSubs.length - 1].classList.remove('open');
+      return;
+    }
+
+    // 4. If not on Beranda tab, go back to Beranda
+    if (currentTab !== 'beranda') {
+      currentTab = 'beranda';
+      _origSwitchTab('beranda');
+      try { window.history.pushState({ velo: 'app' }, ''); } catch(err) {}
+      return;
+    }
+
+    // 5. Already on Beranda (Home) -> Show Exit Confirmation Modal
+    try { window.history.pushState({ velo: 'app' }, ''); } catch(err) {}
+    exitEl.classList.add('open');
+  });
+
+  function cancelExit() {
+    document.getElementById('exitModal').classList.remove('open');
+  }
+  function confirmExit() {
+    allowRealExit = true;
+    document.getElementById('exitModal').classList.remove('open');
+    window.history.go(-2);
+    setTimeout(() => { window.close(); }, 150);
+  }
+
   init();
 </script>
 </body>
