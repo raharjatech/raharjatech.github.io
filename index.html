@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#00b87c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Raharja POS & Pembukuan</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="logo-pos-192.png" />
+  <style>
+    :root {
+      --primary: #00b87c;
+      --primary-dark: #009c68;
+      --primary-soft: #e6f8f2;
+      --bg: #f5f7f9;
+      --surface: #ffffff;
+      --text: #1a1f24;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      min-height: 100vh;
+      position: relative;
+      padding-bottom: 84px;
+    }
+    /* Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--surface);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .icon-btn {
+      background: none; border: none; padding: 6px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; color: var(--text);
+      border-radius: 50%;
+    }
+    .icon-btn:active { background: #f3f4f6; }
+    .topbar-title { font-size: 18px; font-weight: 700; margin: 0; }
+
+    /* Cards & Layout */
+    .page { display: none; padding: 14px 16px; animation: fadeIn 0.18s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+    /* Summary Hero */
+    .hero {
+      background: linear-gradient(135deg, #00b87c, #009262);
+      color: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .hero-label { font-size: 12px; opacity: 0.9; }
+    .hero-val { font-size: 26px; font-weight: 800; margin: 4px 0 12px; }
+    .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; }
+    .hero-stat-label { font-size: 11px; opacity: 0.85; }
+    .hero-stat-val { font-size: 15px; font-weight: 700; margin-top: 2px; }
+
+    /* Action Buttons Grid */
+    .quick-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .quick-btn:active { background: var(--primary-soft); border-color: var(--primary); }
+    .quick-ico {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--primary-soft); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700;
+    }
+
+    /* Form Controls */
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+    .input, .select-box, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+    .input:focus, textarea:focus { border-color: var(--primary); }
+    .select-box {
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+    }
+    .input-group { position: relative; display: flex; align-items: center; }
+    .input-suffix {
+      position: absolute; right: 12px; font-size: 12px; color: var(--muted); font-weight: 600;
+    }
+    .input-prefix {
+      position: absolute; left: 12px; font-size: 14px; color: var(--text); font-weight: 700;
+    }
+    .has-prefix { padding-left: 38px; }
+    .has-suffix { padding-right: 48px; }
+
+    /* Pills & Tabs */
+    .pill-group { display: flex; gap: 10px; margin-bottom: 14px; }
+    .pill {
+      padding: 8px 20px; border-radius: 999px; font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer; background: #eef1f4; color: var(--text);
+    }
+    .pill.active { background: var(--primary); color: #fff; }
+
+    .tabs { display: flex; border-bottom: 1px solid var(--border); margin: 0 -14px 14px; }
+    .tab {
+      flex: 1; text-align: center; padding: 10px; font-size: 14px; font-weight: 600;
+      color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer;
+    }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* Entity Card (Penjualan Tunai / Kategori / Pihak) */
+    .entity-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .entity-left { display: flex; align-items: center; gap: 12px; }
+    .avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 15px; flex-shrink: 0;
+    }
+    .avatar.gray { background: #f1f3f5; color: var(--text); }
+    .btn-ubah {
+      border: 1px solid var(--border); background: #fff; color: var(--primary);
+      padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 4px;
+    }
+
+    /* Dashed / Outline Add Button */
+    .btn-add-line {
+      width: 100%; padding: 13px; border-radius: 12px;
+      border: 1px solid var(--border); background: #fff;
+      color: var(--primary); font-weight: 700; font-size: 15px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      cursor: pointer; margin-bottom: 12px;
+    }
+
+    /* Primary Sticky Button */
+    .btn-primary {
+      width: 100%; padding: 15px; border-radius: 12px; border: none;
+      background: var(--primary); color: #fff; font-size: 16px; font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary:active { background: var(--primary-dark); }
+    .btn-secondary {
+      width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border);
+      background: #fff; color: var(--text); font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Toggle Switch */
+    .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #d1d5db; transition: .2s; border-radius: 26px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+      background-color: white; transition: .2s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: var(--surface);
+      border-top: 1px solid var(--border); display: flex; z-index: 40;
+      padding: 8px 0 10px;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      background: none; border: none; color: var(--muted); font-size: 11px; font-weight: 600;
+      cursor: pointer;
+    }
+    .nav-item.active { color: var(--primary); }
+    .nav-ico { font-size: 20px; }
+
+    /* Bottom Sheet Modal */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 100; justify-content: center; align-items: flex-end;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-sheet {
+      width: 100%; max-width: 480px; background: #fff;
+      border-radius: 20px 20px 0 0; padding: 18px 16px 24px;
+      max-height: 85vh; overflow-y: auto;
+    }
+    .modal-title { font-size: 17px; font-weight: 700; margin: 0 0 12px; }
+    .list-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 4px; border-bottom: 1px solid #f1f3f5; cursor: pointer;
+    }
+    .list-row:last-child { border-bottom: none; }
+    .badge {
+      font-size: 11px; padding: 4px 10px; border-radius: 8px;
+      background: #f3f4f6; color: var(--muted); font-weight: 600;
+    }
+    .badge.green { background: var(--primary-soft); color: var(--primary); }
+    .badge.red { background: #fee2e2; color: var(--danger); }
+    .info-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--muted); margin: 4px 0 12px;
+    }
+    .info-dot {
+      width: 16px; height: 16px; border-radius: 50%; background: var(--primary);
+      color: #fff; font-size: 10px; display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700;
+    }
+    .crown {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 50%; background: #fbbf24; color: #fff; font-size: 11px;
+    }
+    .toast {
+      position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
+      background: #111827; color: #fff; padding: 10px 18px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; z-index: 200; display: none;
+    }
+    .meta-split {
+      display: grid; grid-template-columns: 1fr 1fr; background: #fff;
+      border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .meta-cell { padding: 10px 14px; }
+    .meta-cell:first-child { border-right: 1px solid var(--border); }
+    .meta-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .meta-val { font-size: 15px; font-weight: 700; border: none; width: 100%; font-family: inherit; outline: none; background: transparent; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="btn-back" class="icon-btn" style="display:none;" onclick="goHome()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+      <h1 id="topbar-title" class="topbar-title">Raharja POS</h1>
+    </div>
+    <button class="btn-ubah" onclick="exportCSV()" id="btn-export">⬇ CSV</button>
+  </header>
+
+  <!-- PAGE: BERANDA -->
+  <section id="page-home" class="page active">
+    <div class="hero">
+      <div class="hero-label">Saldo Kas Bersih</div>
+      <div class="hero-val" id="stat-saldo">Rp 0</div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-label">Pemasukan / Penjualan</div>
+          <div class="hero-stat-val" id="stat-in">Rp 0</div>
+        </div>
+        <div>
+          <div class="hero-stat-label">Pengeluaran / Beli</div>
+          <div class="hero-stat-val" id="stat-out">Rp 0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:14px;">
+      <button class="quick-btn" onclick="openPage('page-sale', 'Tambah Penjualan')">
+        <span class="quick-ico">🛒</span>Penjualan
+      </button>
+      <button class="quick-btn" onclick="openPage('page-purchase', 'Tambah Pembelian')">
+        <span class="quick-ico">📦</span>Pembelian
+      </button>
+      <button class="quick-btn" onclick="openPage('page-expense', 'Tambah Pengeluaran')">
+        <span class="quick-ico">💸</span>Pengeluaran
+      </button>
+      <button class="quick-btn" onclick="openPage('page-cashin', 'Tambah Uang Masuk')">
+        <span class="quick-ico">⬇️</span>Uang Masuk
+      </button>
+      <button class="quick-btn" onclick="openPage('page-cashout', 'Tambah Uang Keluar')">
+        <span class="quick-ico">⬆️</span>Uang Keluar
+      </button>
+      <button class="quick-btn" onclick="openAddItem()">
+        <span class="quick-ico">➕</span>Tambah Item
+      </button>
+    </div>
+
+    <div class="row" style="margin-bottom:8px;">
+      <strong style="font-size:15px;">Transaksi Terbaru</strong>
+      <span style="font-size:12px;color:var(--primary);cursor:pointer;font-weight:600;" onclick="switchTab('page-history','Riwayat Transaksi',2)">Lihat Semua</span>
+    </div>
+    <div id="home-recent"></div>
+  </section>
+
+  <!-- PAGE: PRODUK / STOK -->
+  <section id="page-products" class="page">
+    <button class="btn-add-line" onclick="openAddItem()">➕ Tambah Item Baru</button>
+    <div id="product-list"></div>
+  </section>
+
+  <!-- PAGE: RIWAYAT -->
+  <section id="page-history" class="page">
+    <div id="history-list"></div>
+  </section>
+
+  <!-- PAGE: PIHAK / KONTAK -->
+  <section id="page-parties" class="page">
+    <button class="btn-add-line" onclick="openNewPartyModal()">👤 + Tambah Pihak Baru</button>
+    <div id="party-list"></div>
+  </section>
+
+  <!-- PAGE: TAMBAH ITEM -->
+  <section id="page-item" class="page">
+    <div class="card">
+      <div class="field">
+        <label>Nama Item</label>
+        <input id="item-name" class="input" placeholder="Contoh: KARTU GOOGLE REVIEW" />
+      </div>
+      <div class="field">
+        <label>Kategori</label>
+        <select id="item-cat" class="input">
+          <option value="General">General</option>
+          <option value="Produk Digital">Produk Digital</option>
+          <option value="Makanan & Minuman">Makanan & Minuman</option>
+          <option value="Jasa">Jasa</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Jenis Item</label>
+        <div class="pill-group">
+          <button type="button" class="pill active" id="pill-produk" onclick="setItemType('Produk')">Produk</button>
+          <button type="button" class="pill" id="pill-layanan" onclick="setItemType('Layanan')">Layanan</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" id="tab-stok" onclick="switchItemTab('stok')">Detail Stok</div>
+        <div class="tab" id="tab-extra" onclick="switchItemTab('extra')">Detail Tambahan</div>
+      </div>
+
+      <div id="item-tab-stok">
+        <div class="grid-2">
+          <div class="field">
+            <label>Stok Awal</label>
+            <div class="input-group">
+              <input id="item-stock" type="number" class="input has-suffix" value="42" />
+              <span class="input-suffix" id="lbl-u1-stock">PCS</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Satuan</label>
+            <div class="select-box" onclick="openUnitModal()">
+              <span id="lbl-unit-pair" style="font-weight:600;">PCS & PKT</span>
+              <span>›</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-badge">
+          <span class="info-dot">i</span>
+          <span id="lbl-conversion">1 PCS = 1 PKT</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Harga Jual</label>
+            <div class="input-group">
+              <span class="input-prefix">Rp</span>
+              <input id="item-sell" type="number" class="input has-prefix has-suffix" value="50000" />
+              <span class="input-suffix" id="lbl-u1-sell">/PCS</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Harga Beli</label>
+            <div class="input-group">
+              <span class="input-prefix">Rp</span>
+              <input id="item-buy" type="number" class="input has-prefix has-suffix" value="1500" />
+              <span class="input-suffix" id="lbl-u1-buy">/PCS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" id="wrap-sell2">
+          <label>Harga Jual untuk Satuan Kedua</label>
+          <div class="input-group">
+            <span class="input-prefix">Rp</span>
+            <input id="item-sell2" type="number" class="input has-prefix has-suffix" value="100000" />
+            <span class="input-suffix" id="lbl-u2-sell">/PKT</span>
+          </div>
+        </div>
+
+        <div class="row" style="padding:8px 0;">
+          <div class="row" style="gap:8px;">
+            <span>🔔</span>
+            <span style="font-weight:600;font-size:14px;">Peringatan Stok Menipis</span>
+            <span class="crown">♛</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="item-alert" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div id="item-tab-extra" style="display:none;">
+        <div class="field">
+          <label>SKU / Kode Barcode</label>
+          <input id="item-sku" class="input" placeholder="Opsional (contoh: KGR-001)" />
+        </div>
+        <div class="field">
+          <label>Catatan Produk</label>
+          <textarea id="item-note" rows="3" placeholder="Deskripsi singkat produk..."></textarea>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveItem()">Simpan</button>
+  </section>
+
+  <!-- PAGE: TAMBAH PENJUALAN -->
+  <section id="page-sale" class="page">
+    <div class="meta-split">
+      <div class="meta-cell">
+        <div class="meta-label">Nomor Faktur</div>
+        <input id="sale-no" class="meta-val" value="1" />
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">Tanggal</div>
+        <input id="sale-date" type="date" class="meta-val" />
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <div class="entity-left">
+        <div class="avatar">💵</div>
+        <strong id="sale-party-label">Penjualan Tunai</strong>
+      </div>
+      <button class="btn-ubah" onclick="openPartyPicker('sale')">↻ Ubah</button>
+    </div>
+
+    <button class="btn-add-line" onclick="openItemPicker('sale')">➕ Tambah Item</button>
+    <div id="sale-cart"></div>
+
+    <div class="card row">
+      <strong>Jumlah Total</strong>
+      <div class="input-group" style="width:55%;">
+        <span class="input-prefix">Rp</span>
+        <input id="sale-total" type="number" class="input has-prefix" placeholder="0" style="text-align:right;font-weight:700;" />
+      </div>
+    </div>
+
+    <div class="field">
+      <textarea id="sale-note" rows="2" placeholder="Catatan atau Keterangan"></textarea>
+    </div>
+
+    <button class="btn-primary" onclick="saveTransaction('sale')">Simpan</button>
+  </section>
+
+  <!-- PAGE: TAMBAH PEMBELIAN -->
+  <section id="page-purchase" class="page">
+    <div class="meta-split">
+      <div class="meta-cell">
+        <div class="meta-label">Nomor Faktur</div>
+        <input id="purchase-no" class="meta-val" value="1" />
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">Tanggal</div>
+        <input id="purchase-date" type="date" class="meta-val" />
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <div class="entity-left">
+        <div class="avatar">💵</div>
+        <strong id="purchase-party-label">Pembelian Tunai</strong>
+      </div>
+      <button class="btn-ubah" onclick="openPartyPicker('purchase')">↻ Ubah</button>
+    </div>
+
+    <button class="btn-add-line" onclick="openItemPicker('purchase')">➕ Tambah Item</button>
+    <div id="purchase-cart"></div>
+
+    <div class="card row">
+      <strong>Jumlah Total</strong>
+      <div class="input-group" style="width:55%;">
+        <span class="input-prefix">Rp</span>
+        <input id="purchase-total" type="number" class="input has-prefix" placeholder="0" style="text-align:right;font-weight:700;" />
+      </div>
+    </div>
+
+    <div class="field">
+      <textarea id="purchase-note" rows="2" placeholder="Catatan atau Keterangan"></textarea>
+    </div>
+
+    <button class="btn-primary" onclick="saveTransaction('purchase')">Simpan</button>
+  </section>
+
+  <!-- PAGE: TAMBAH PENGELUARAN -->
+  <section id="page-expense" class="page">
+    <div class="meta-split">
+      <div class="meta-cell">
+        <div class="meta-label">Nomor Pengeluaran</div>
+        <input id="exp-no" class="meta-val" value="1" />
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">Tanggal</div>
+        <input id="exp-date" type="date" class="meta-val" />
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <div class="entity-left">
+        <div class="avatar">👛</div>
+        <strong id="exp-cat-label">Perjalanan & Transportasi</strong>
+      </div>
+      <button class="btn-ubah" onclick="openExpenseCatModal()">↻ Ubah</button>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label>Keterangan Item Pengeluaran</label>
+        <input id="exp-note" class="input" placeholder="Contoh: Bensin keliling Sukajadi" />
+      </div>
+      <div class="row">
+        <strong>Jumlah Total</strong>
+        <div class="input-group" style="width:55%;">
+          <span class="input-prefix">Rp</span>
+          <input id="exp-total" type="number" class="input has-prefix" placeholder="0" style="text-align:right;font-weight:700;" />
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="saveExpense()">Simpan</button>
+  </section>
+
+  <!-- PAGE: TAMBAH UANG MASUK -->
+  <section id="page-cashin" class="page">
+    <div class="meta-split">
+      <div class="meta-cell">
+        <div class="meta-label">Nomor Struk</div>
+        <input id="cashin-no" class="meta-val" value="1" />
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">Tanggal</div>
+        <input id="cashin-date" type="date" class="meta-val" />
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <div class="entity-left">
+        <div class="avatar gray" id="cashin-avatar">AH</div>
+        <div>
+          <strong id="cashin-party-name">Ambu Heny</strong>
+          <div style="font-size:13px;color:var(--muted);">Rp 0</div>
+        </div>
+      </div>
+      <button class="btn-ubah" onclick="openPartyPicker('cashin')">↻ Ubah</button>
+    </div>
+
+    <div class="card">
+      <div class="field" style="margin-bottom:0;">
+        <label style="font-size:14px;color:var(--text);">Jumlah Diterima</label>
+        <div class="input-group">
+          <span class="input-prefix">Rp</span>
+          <input id="cashin-total" type="number" class="input has-prefix" placeholder="Jumlah Total" />
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="saveCashFlow('cashin')">Simpan</button>
+  </section>
+
+  <!-- PAGE: TAMBAH UANG KELUAR -->
+  <section id="page-cashout" class="page">
+    <div class="meta-split">
+      <div class="meta-cell">
+        <div class="meta-label">Nomor Struk</div>
+        <input id="cashout-no" class="meta-val" value="1" />
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">Tanggal</div>
+        <input id="cashout-date" type="date" class="meta-val" />
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <div class="entity-left">
+        <div class="avatar gray" id="cashout-avatar">ZC</div>
+        <div>
+          <strong id="cashout-party-name">Zaki Costyt</strong>
+          <div style="font-size:13px;color:var(--muted);">Rp 0</div>
+        </div>
+      </div>
+      <button class="btn-ubah" onclick="openPartyPicker('cashout')">↻ Ubah</button>
+    </div>
+
+    <div class="card">
+      <div class="field" style="margin-bottom:0;">
+        <label style="font-size:14px;color:var(--text);">Jumlah Dibayar</label>
+        <div class="input-group">
+          <span class="input-prefix">Rp</span>
+          <input id="cashout-total" type="number" class="input has-prefix" placeholder="Jumlah Total" />
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="saveCashFlow('cashout')">Simpan</button>
+  </section>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('page-home','Raharja POS',0)"><span class="nav-ico">🏠</span>Beranda</button>
+    <button class="nav-item" onclick="switchTab('page-products','Stok & Item',1)"><span class="nav-ico">📦</span>Produk</button>
+    <button class="nav-item" onclick="switchTab('page-history','Riwayat Transaksi',2)"><span class="nav-ico">🧾</span>Riwayat</button>
+    <button class="nav-item" onclick="switchTab('page-parties','Daftar Pihak',3)"><span class="nav-ico">👥</span>Pihak</button>
+  </nav>
+
+  <!-- MODAL: PILIH SATUAN UKUR -->
+  <div class="modal-backdrop" id="modal-unit" onclick="closeModalOnBg(event,'modal-unit')">
+    <div class="modal-sheet">
+      <h3 class="modal-title">Pilih Satuan Ukur</h3>
+      <div class="field">
+        <label>Satuan Utama</label>
+        <select id="sel-u1" class="input">
+          <option value="PCS">Piece (PCS)</option>
+          <option value="BTL">Botol (BTL)</option>
+          <option value="BKS">Bungkus (BKS)</option>
+          <option value="KG">Kilogram (KG)</option>
+          <option value="UNIT">Unit (UNIT)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Satuan Kedua</label>
+        <select id="sel-u2" class="input">
+          <option value="PKT">Paket (PKT)</option>
+          <option value="BOX">Box (BOX)</option>
+          <option value="LSN">Lusin (LSN)</option>
+          <option value="DUS">Dus (DUS)</option>
+          <option value="">Tidak Ada</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nilai Konversi (1 Satuan Kedua = berapa Satuan Utama?)</label>
+        <input id="inp-conv" type="number" class="input" value="1" placeholder="Contoh: 3 (1 PKT = 3 PCS)" />
+      </div>
+      <div class="grid-2" style="margin-top:16px;">
+        <button class="btn-secondary" onclick="closeModal('modal-unit')">Batal</button>
+        <button class="btn-primary" onclick="applyUnits()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PILIH KATEGORI PENGELUARAN -->
+  <div class="modal-backdrop" id="modal-exp-cat" onclick="closeModalOnBg(event,'modal-exp-cat')">
+    <div class="modal-sheet">
+      <h3 class="modal-title">Pilih Kategori untuk Pengeluaran</h3>
+      <input id="search-exp-cat" class="input" placeholder="🔍 Cari Kategori..." oninput="renderExpCategories()" style="margin-bottom:10px;" />
+      <div id="exp-cat-list"></div>
+      <button class="btn-secondary" style="margin-top:12px;" onclick="addNewExpCat()">+ Tambah Kategori Baru</button>
+    </div>
+  </div>
+
+  <!-- MODAL: PILIH PIHAK / KONTAK -->
+  <div class="modal-backdrop" id="modal-party" onclick="closeModalOnBg(event,'modal-party')">
+    <div class="modal-sheet">
+      <h3 class="modal-title" id="modal-party-title">Pilih Pihak</h3>
+      <input id="search-party" class="input" placeholder="🔍 Masukkan nama pihak..." oninput="renderPartyPicker()" style="margin-bottom:10px;" />
+      <div id="party-picker-list"></div>
+      <button class="btn-primary" style="margin-top:12px;" onclick="closeModal('modal-party');openNewPartyModal();">+ Tambah Pihak Baru</button>
+    </div>
+  </div>
+
+  <!-- MODAL: TAMBAH PIHAK BARU -->
+  <div class="modal-backdrop" id="modal-new-party" onclick="closeModalOnBg(event,'modal-new-party')">
+    <div class="modal-sheet">
+      <h3 class="modal-title">Tambah Pihak Baru</h3>
+      <div class="field">
+        <label>Nama Pelanggan / Supplier</label>
+        <input id="np-name" class="input" placeholder="Contoh: Warung Kopi Pasteur" />
+      </div>
+      <div class="field">
+        <label>Nomor WhatsApp / Telepon</label>
+        <input id="np-phone" class="input" placeholder="+62812..." />
+      </div>
+      <div class="grid-2">
+        <button class="btn-secondary" onclick="closeModal('modal-new-party')">Batal</button>
+        <button class="btn-primary" onclick="saveNewParty()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PILIH ITEM KE KERANJANG -->
+  <div class="modal-backdrop" id="modal-item-picker" onclick="closeModalOnBg(event,'modal-item-picker')">
+    <div class="modal-sheet">
+      <h3 class="modal-title">Pilih Item</h3>
+      <div id="item-picker-list"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Tersimpan!</div>
+
+  <script>
+    // Register Service Worker for PWA / PWABuilder
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    // Default Seed Data matching user's screenshots
+    const DEFAULT_STATE = {
+      items: [
+        {
+          id: 1,
+          name: "KARTU GOOGLE REVIEW",
+          category: "General",
+          type: "Produk",
+          stock: 42,
+          u1: "PCS",
+          u2: "PKT",
+          conv: 1,
+          sell: 50000,
+          buy: 1500,
+          sell2: 100000,
+          alert: false
+        }
+      ],
+      expenseCategories: [
+        "Sewa", "Gaji", "Biaya Bank", "Pemasaran", "Utilitas",
+        "Perbaikan & Pemeliharaan", "Perjalanan & Transportasi", "Lain-lain"
+      ],
+      parties: [
+        { id: 1, name: "Ambu Heny", phone: "+6281573374648", balance: 0 },
+        { id: 2, name: "Zaki Costyt", phone: "+6285592509283", balance: 0 },
+        { id: 3, name: "Bapak Sumarna", phone: "+6285794035969", balance: 0 },
+        { id: 4, name: "Pa Agus Suryana", phone: "+6281316711665", balance: 0 }
+      ],
+      transactions: []
+    };
+
+    let state = JSON.parse(localStorage.getItem('raharja_pos_v1')) || DEFAULT_STATE;
+    let currentItemType = 'Produk';
+    let tempUnit = { u1: 'PCS', u2: 'PKT', conv: 1 };
+    let activePartyTarget = 'sale';
+    let activeItemTarget = 'sale';
+    let carts = { sale: [], purchase: [] };
+    let selectedExpCat = 'Perjalanan & Transportasi';
+
+    function saveState() {
+      localStorage.setItem('raharja_pos_v1', JSON.stringify(state));
+      renderAll();
+    }
+
+    function rp(num) {
+      return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+    }
+
+    function initials(name) {
+      return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    function todayStr() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2000);
+    }
+
+    // Navigation
+    function switchTab(pageId, title, idx) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      document.getElementById('topbar-title').textContent = title;
+      document.getElementById('btn-back').style.display = 'none';
+      document.getElementById('btn-export').style.display = 'flex';
+      document.getElementById('bottom-nav').style.display = 'flex';
+      document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === idx));
+      renderAll();
+    }
+
+    function openPage(pageId, title) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      document.getElementById('topbar-title').textContent = title;
+      document.getElementById('btn-back').style.display = 'flex';
+      document.getElementById('btn-export').style.display = 'none';
+      document.getElementById('bottom-nav').style.display = 'none';
+      ['sale-date','purchase-date','exp-date','cashin-date','cashout-date'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.value) el.value = todayStr();
+      });
+    }
+
+    function goHome() {
+      switchTab('page-home', 'Raharja POS', 0);
+    }
+
+    // Item Form Logic
+    function openAddItem() {
+      document.getElementById('item-name').value = '';
+      document.getElementById('item-stock').value = '';
+      document.getElementById('item-sell').value = '';
+      document.getElementById('item-buy').value = '';
+      document.getElementById('item-sell2').value = '';
+      tempUnit = { u1: 'PCS', u2: 'PKT', conv: 1 };
+      updateUnitLabels();
+      openPage('page-item', 'Tambah Item');
+    }
+
+    function setItemType(t) {
+      currentItemType = t;
+      document.getElementById('pill-produk').classList.toggle('active', t === 'Produk');
+      document.getElementById('pill-layanan').classList.toggle('active', t === 'Layanan');
+    }
+
+    function switchItemTab(tab) {
+      document.getElementById('tab-stok').classList.toggle('active', tab === 'stok');
+      document.getElementById('tab-extra').classList.toggle('active', tab === 'extra');
+      document.getElementById('item-tab-stok').style.display = tab === 'stok' ? 'block' : 'none';
+      document.getElementById('item-tab-extra').style.display = tab === 'extra' ? 'block' : 'none';
+    }
+
+    function openUnitModal() {
+      document.getElementById('sel-u1').value = tempUnit.u1;
+      document.getElementById('sel-u2').value = tempUnit.u2;
+      document.getElementById('inp-conv').value = tempUnit.conv;
+      document.getElementById('modal-unit').classList.add('open');
+    }
+
+    function applyUnits() {
+      tempUnit.u1 = document.getElementById('sel-u1').value;
+      tempUnit.u2 = document.getElementById('sel-u2').value;
+      tempUnit.conv = Number(document.getElementById('inp-conv').value) || 1;
+      updateUnitLabels();
+      closeModal('modal-unit');
+    }
+
+    function updateUnitLabels() {
+      document.getElementById('lbl-u1-stock').textContent = tempUnit.u1;
+      document.getElementById('lbl-u1-sell').textContent = '/' + tempUnit.u1;
+      document.getElementById('lbl-u1-buy').textContent = '/' + tempUnit.u1;
+      if (tempUnit.u2) {
+        document.getElementById('lbl-unit-pair').textContent = `${tempUnit.u1} & ${tempUnit.u2}`;
+        document.getElementById('lbl-conversion').textContent = `1 ${tempUnit.u2} = ${tempUnit.conv} ${tempUnit.u1}`;
+        document.getElementById('lbl-u2-sell').textContent = '/' + tempUnit.u2;
+        document.getElementById('wrap-sell2').style.display = 'block';
+      } else {
+        document.getElementById('lbl-unit-pair').textContent = tempUnit.u1;
+        document.getElementById('lbl-conversion').textContent = `Satuan tunggal (${tempUnit.u1})`;
+        document.getElementById('wrap-sell2').style.display = 'none';
+      }
+    }
+
+    function saveItem() {
+      const name = document.getElementById('item-name').value.trim();
+      if (!name) return showToast('Nama item wajib diisi!');
+      state.items.unshift({
+        id: Date.now(),
+        name,
+        category: document.getElementById('item-cat').value,
+        type: currentItemType,
+        stock: Number(document.getElementById('item-stock').value) || 0,
+        u1: tempUnit.u1,
+        u2: tempUnit.u2,
+        conv: tempUnit.conv,
+        sell: Number(document.getElementById('item-sell').value) || 0,
+        buy: Number(document.getElementById('item-buy').value) || 0,
+        sell2: Number(document.getElementById('item-sell2').value) || 0,
+        alert: document.getElementById('item-alert').checked
+      });
+      saveState();
+      showToast('Item berhasil disimpan!');
+      switchTab('page-products', 'Stok & Item', 1);
+    }
+
+    // Expense Category Modal
+    function openExpenseCatModal() {
+      renderExpCategories();
+      document.getElementById('modal-exp-cat').classList.add('open');
+    }
+
+    function renderExpCategories() {
+      const q = document.getElementById('search-exp-cat').value.toLowerCase();
+      const box = document.getElementById('exp-cat-list');
+      box.innerHTML = state.expenseCategories
+        .filter(c => c.toLowerCase().includes(q))
+        .map(c => `
+          <div class="list-row" onclick="selectExpCat('${c.replace(/'/g, "\\'")}')">
+            <span style="font-weight:600;">${c}</span>
+            <input type="radio" name="expcat" ${c === selectedExpCat ? 'checked' : ''} />
+          </div>
+        `).join('');
+    }
+
+    function selectExpCat(c) {
+      selectedExpCat = c;
+      document.getElementById('exp-cat-label').textContent = c;
+      closeModal('modal-exp-cat');
+    }
+
+    function addNewExpCat() {
+      const name = prompt('Nama kategori pengeluaran baru:');
+      if (name && name.trim()) {
+        state.expenseCategories.push(name.trim());
+        saveState();
+        selectExpCat(name.trim());
+      }
+    }
+
+    function saveExpense() {
+      const total = Number(document.getElementById('exp-total').value) || 0;
+      if (total <= 0) return showToast('Masukkan jumlah pengeluaran!');
+      state.transactions.unshift({
+        id: Date.now(),
+        type: 'Pengeluaran',
+        direction: 'out',
+        title: selectedExpCat,
+        note: document.getElementById('exp-note').value,
+        date: document.getElementById('exp-date').value || todayStr(),
+        total
+      });
+      document.getElementById('exp-total').value = '';
+      document.getElementById('exp-note').value = '';
+      saveState();
+      showToast('Pengeluaran tersimpan!');
+      goHome();
+    }
+
+    // Party Picker
+    function openPartyPicker(target) {
+      activePartyTarget = target;
+      document.getElementById('modal-party-title').textContent =
+        target === 'cashin' ? 'Pilih Pihak untuk Uang Masuk' :
+        target === 'cashout' ? 'Pilih Pihak untuk Uang Keluar' : 'Pilih Pihak / Pelanggan';
+      renderPartyPicker();
+      document.getElementById('modal-party').classList.add('open');
+    }
+
+    function renderPartyPicker() {
+      const q = document.getElementById('search-party').value.toLowerCase();
+      const box = document.getElementById('party-picker-list');
+      let html = '';
+      if (activePartyTarget === 'sale' || activePartyTarget === 'purchase') {
+        const lbl = activePartyTarget === 'sale' ? 'Penjualan Tunai' : 'Pembelian Tunai';
+        html += `<div class="list-row" onclick="selectParty('${lbl}')">
+          <div class="entity-left"><div class="avatar">💵</div><strong>${lbl}</strong></div>
+          <span class="badge green">Tunai</span>
+        </div>`;
+      }
+      html += state.parties
+        .filter(p => p.name.toLowerCase().includes(q) || p.phone.includes(q))
+        .map(p => `
+          <div class="list-row" onclick="selectParty('${p.name.replace(/'/g, "\\'")}')">
+            <div class="entity-left">
+              <div class="avatar gray">${initials(p.name)}</div>
+              <div>
+                <div style="font-weight:700;">${p.name}</div>
+                <div style="font-size:12px;color:var(--muted);">${p.phone}</div>
+              </div>
+            </div>
+            <span class="badge">Dari Kontak</span>
+          </div>
+        `).join('');
+      box.innerHTML = html;
+    }
+
+    function selectParty(name) {
+      if (activePartyTarget === 'sale') document.getElementById('sale-party-label').textContent = name;
+      if (activePartyTarget === 'purchase') document.getElementById('purchase-party-label').textContent = name;
+      if (activePartyTarget === 'cashin') {
+        document.getElementById('cashin-party-name').textContent = name;
+        document.getElementById('cashin-avatar').textContent = initials(name);
+      }
+      if (activePartyTarget === 'cashout') {
+        document.getElementById('cashout-party-name').textContent = name;
+        document.getElementById('cashout-avatar').textContent = initials(name);
+      }
+      closeModal('modal-party');
+    }
+
+    function openNewPartyModal() {
+      document.getElementById('np-name').value = '';
+      document.getElementById('np-phone').value = '';
+      document.getElementById('modal-new-party').classList.add('open');
+    }
+
+    function saveNewParty() {
+      const name = document.getElementById('np-name').value.trim();
+      const phone = document.getElementById('np-phone').value.trim() || '-';
+      if (!name) return showToast('Nama pihak wajib diisi!');
+      state.parties.unshift({ id: Date.now(), name, phone, balance: 0 });
+      saveState();
+      closeModal('modal-new-party');
+      showToast('Pihak baru ditambahkan!');
+    }
+
+    // Item Picker for Sale / Purchase
+    function openItemPicker(target) {
+      activeItemTarget = target;
+      const box = document.getElementById('item-picker-list');
+      if (!state.items.length) {
+        box.innerHTML = '<p style="color:var(--muted);text-align:center;">Belum ada item. Tambahkan produk dulu.</p>';
+      } else {
+        box.innerHTML = state.items.map(it => `
+          <div class="card" style="margin-bottom:8px;">
+            <div class="row" style="margin-bottom:8px;">
+              <div>
+                <strong>${it.name}</strong>
+                <div style="font-size:12px;color:var(--muted);">Stok: ${it.stock} ${it.u1}</div>
+              </div>
+            </div>
+            <div class="grid-2">
+              <button class="btn-secondary" style="padding:8px;font-size:13px;" onclick="addToCart(${it.id}, '${it.u1}', ${target === 'sale' ? it.sell : it.buy}, 1)">
+                + 1 ${it.u1} (${rp(target === 'sale' ? it.sell : it.buy)})
+              </button>
+              ${it.u2 ? `<button class="btn-primary" style="padding:8px;font-size:13px;" onclick="addToCart(${it.id}, '${it.u2}', ${target === 'sale' ? (it.sell2 || it.sell) : it.buy * it.conv}, ${it.conv})">
+                + 1 ${it.u2} (${rp(target === 'sale' ? (it.sell2 || it.sell) : it.buy * it.conv)})
+              </button>` : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+      document.getElementById('modal-item-picker').classList.add('open');
+    }
+
+    function addToCart(itemId, unit, price, stockFactor) {
+      const it = state.items.find(x => x.id === itemId);
+      if (!it) return;
+      carts[activeItemTarget].push({ itemId, name: it.name, unit, price, qty: 1, stockFactor });
+      renderCart(activeItemTarget);
+      closeModal('modal-item-picker');
+    }
+
+    function renderCart(target) {
+      const box = document.getElementById(target + '-cart');
+      const list = carts[target];
+      let sum = 0;
+      box.innerHTML = list.map((c, i) => {
+        sum += c.price * c.qty;
+        return `<div class="card row" style="padding:10px 14px;">
+          <div>
+            <strong>${c.name}</strong>
+            <div style="font-size:12px;color:var(--muted);">${c.qty} ${c.unit} × ${rp(c.price)}</div>
+          </div>
+          <div class="row" style="gap:8px;">
+            <strong>${rp(c.price * c.qty)}</strong>
+            <button class="icon-btn" style="color:var(--danger);" onclick="removeCartItem('${target}', ${i})">✕</button>
+          </div>
+        </div>`;
+      }).join('');
+      document.getElementById(target + '-total').value = sum || '';
+    }
+
+    function removeCartItem(target, idx) {
+      carts[target].splice(idx, 1);
+      renderCart(target);
+    }
+
+    function saveTransaction(target) {
+      const total = Number(document.getElementById(target + '-total').value) || 0;
+      if (total <= 0) return showToast('Jumlah total masih 0!');
+      const party = document.getElementById(target + '-party-label').textContent;
+      const date = document.getElementById(target + '-date').value || todayStr();
+      const note = document.getElementById(target + '-note').value;
+
+      // Update stock
+      carts[target].forEach(c => {
+        const it = state.items.find(x => x.id === c.itemId);
+        if (it) {
+          if (target === 'sale') it.stock = Math.max(0, it.stock - (c.qty * c.stockFactor));
+          else it.stock += (c.qty * c.stockFactor);
+        }
+      });
+
+      state.transactions.unshift({
+        id: Date.now(),
+        type: target === 'sale' ? 'Penjualan' : 'Pembelian',
+        direction: target === 'sale' ? 'in' : 'out',
+        title: party,
+        note: note || carts[target].map(c => `${c.name} (${c.qty} ${c.unit})`).join(', '),
+        date,
+        total
+      });
+
+      carts[target] = [];
+      renderCart(target);
+      document.getElementById(target + '-note').value = '';
+      saveState();
+      showToast((target === 'sale' ? 'Penjualan' : 'Pembelian') + ' tersimpan!');
+      goHome();
+    }
+
+    function saveCashFlow(target) {
+      const total = Number(document.getElementById(target + '-total').value) || 0;
+      if (total <= 0) return showToast('Masukkan jumlah uang!');
+      const party = document.getElementById(target + '-party-name').textContent;
+      state.transactions.unshift({
+        id: Date.now(),
+        type: target === 'cashin' ? 'Uang Masuk' : 'Uang Keluar',
+        direction: target === 'cashin' ? 'in' : 'out',
+        title: party,
+        note: target === 'cashin' ? 'Penerimaan kas' : 'Pembayaran kas',
+        date: document.getElementById(target + '-date').value || todayStr(),
+        total
+      });
+      document.getElementById(target + '-total').value = '';
+      saveState();
+      showToast('Transaksi kas tersimpan!');
+      goHome();
+    }
+
+    // Export CSV
+    function exportCSV() {
+      let csv = 'Tanggal,Tipe,Pihak/Kategori,Catatan,Arah,Total\n';
+      state.transactions.forEach(t => {
+        csv += `"${t.date}","${t.type}","${t.title}","${(t.note||'').replace(/"/g,'""')}","${t.direction}",${t.total}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `rekap-raharja-pos-${todayStr()}.csv`;
+      a.click();
+      showToast('CSV berhasil diunduh!');
+    }
+
+    // Modals helpers
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function closeModalOnBg(e, id) { if (e.target.id === id) closeModal(id); }
+
+    // Render UI
+    function renderTxList(elId, limit) {
+      const box = document.getElementById(elId);
+      const list = limit ? state.transactions.slice(0, limit) : state.transactions;
+      if (!list.length) {
+        box.innerHTML = '<div class="card" style="text-align:center;color:var(--muted);padding:24px;">Belum ada transaksi. Yuk mulai catat!</div>';
+        return;
+      }
+      box.innerHTML = list.map(t => `
+        <div class="card row">
+          <div>
+            <span class="badge ${t.direction === 'in' ? 'green' : 'red'}" style="margin-bottom:4px;display:inline-block;">${t.type}</span>
+            <div style="font-weight:700;">${t.title}</div>
+            <div style="font-size:12px;color:var(--muted);">${t.date}${t.note ? ' • ' + t.note : ''}</div>
+          </div>
+          <strong style="color:${t.direction === 'in' ? 'var(--primary)' : 'var(--danger)'};">
+            ${t.direction === 'in' ? '+' : '-'}${rp(t.total)}
+          </strong>
+        </div>
+      `).join('');
+    }
+
+    function renderAll() {
+      let totalIn = 0, totalOut = 0;
+      state.transactions.forEach(t => {
+        if (t.direction === 'in') totalIn += t.total;
+        else totalOut += t.total;
+      });
+      document.getElementById('stat-in').textContent = rp(totalIn);
+      document.getElementById('stat-out').textContent = rp(totalOut);
+      document.getElementById('stat-saldo').textContent = rp(totalIn - totalOut);
+
+      renderTxList('home-recent', 5);
+      renderTxList('history-list');
+
+      // Products
+      document.getElementById('product-list').innerHTML = state.items.map(it => `
+        <div class="card">
+          <div class="row">
+            <div>
+              <strong>${it.name}</strong>
+              <div style="font-size:12px;color:var(--muted);">${it.category} • ${it.type}</div>
+            </div>
+            <span class="badge green">Stok: ${it.stock} ${it.u1}</span>
+          </div>
+          <div class="row" style="margin-top:10px;padding-top:8px;border-top:1px solid #f1f3f5;font-size:13px;">
+            <span>Jual: <strong>${rp(it.sell)}/${it.u1}</strong>${it.u2 ? ` | <strong>${rp(it.sell2)}/${it.u2}</strong>` : ''}</span>
+            <span style="color:var(--muted);">Beli: ${rp(it.buy)}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Parties
+      document.getElementById('party-list').innerHTML = state.parties.map(p => `
+        <div class="card row">
+          <div class="entity-left">
+            <div class="avatar gray">${initials(p.name)}</div>
+            <div>
+              <strong>${p.name}</strong>
+              <div style="font-size:12px;color:var(--muted);">${p.phone}</div>
+            </div>
+          </div>
+          <span class="badge">Lunas</span>
+        </div>
+      `).join('');
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
