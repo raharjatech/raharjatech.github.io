@@ -697,6 +697,10 @@
           <div class="ml-left"><div class="ml-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="ml-title">Profil Usaha & Struk</div><div class="ml-sub">Nama toko, alamat, kertas thermal 58/80mm</div></div></div>
           <span>›</span>
         </div>
+        <div class="ml-row" onclick="openReportDetail('staf')">
+          <div class="ml-left"><div class="ml-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div><div><div class="ml-title">Kelola Staf & Login PIN</div><div class="ml-sub" id="activeStaffSub">Kasir aktif: Owner / Admin</div></div></div>
+          <span>›</span>
+        </div>
         <div class="ml-row" onclick="openCategoryModal()">
           <div class="ml-left"><div class="ml-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><div><div class="ml-title">Kelola Kategori</div><div class="ml-sub">Tambah, edit, dan hapus kategori produk/jasa</div></div></div>
           <span>›</span>
@@ -918,6 +922,15 @@
     <div class="sp-title">Lihat Laporan</div>
   </div>
   <div class="sp-body" style="max-width:700px;margin:0 auto;width:100%;" id="reportsBody"></div>
+</div>
+
+<!-- SUBPAGE: GRUP LAPORAN (SUB-MENU LIKE REFERENCE) -->
+<div class="subpage" id="spReportGroup">
+  <div class="sp-head">
+    <button class="sp-back" onclick="closeSubpage('spReportGroup')">←</button>
+    <div class="sp-title" id="rgTitle">Laporan</div>
+  </div>
+  <div class="sp-body" style="max-width:700px;margin:0 auto;width:100%;" id="rgBody"></div>
 </div>
 
 <!-- SUBPAGE: DETAIL LAPORAN (INTERAKTIF + FILTER TANGGAL + EXPORT CSV) -->
@@ -1257,6 +1270,63 @@
   </div>
 </div>
 
+<!-- MODAL: TAMBAH STAF / KASIR -->
+<div class="modal-overlay" id="staffModal">
+  <div class="modal-sheet" style="max-width:440px;">
+    <div class="modal-header">
+      <h3 style="margin:0;font-size:16px;font-weight:800;">Tambah Staf / Kasir</h3>
+      <button class="sp-back" onclick="closeModal('staffModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nama Staf / Kasir</label>
+        <input type="text" id="stName" class="input" placeholder="Contoh: Rina (Kasir Pagi)" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Peran</label>
+          <select id="stRole" class="input">
+            <option value="Kasir">Kasir</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">PIN Login (4-6 Angka)</label>
+          <input type="password" inputmode="numeric" maxlength="6" id="stPin" class="input num" placeholder="1234" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('staffModal')">Batal</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveStaff()">Simpan Staf</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: LOGIN PIN STAF -->
+<div class="modal-overlay" id="staffLoginModal">
+  <div class="modal-sheet" style="max-width:400px;">
+    <div class="modal-header">
+      <h3 style="margin:0;font-size:16px;font-weight:800;">Login Staf / Ganti Kasir</h3>
+      <button class="sp-back" onclick="closeModal('staffLoginModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Pilih Nama Staf</label>
+        <select id="loginStaffSelect" class="input"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Masukkan PIN</label>
+        <input type="password" inputmode="numeric" maxlength="6" id="loginStaffPin" class="input num" placeholder="Masukkan PIN..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('staffLoginModal')">Batal</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="submitStaffLogin()">Masuk</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: KONFIRMASI KELUAR -->
 <div class="modal-overlay" id="exitModal">
   <div class="modal-sheet" style="max-width:380px;">
@@ -1321,10 +1391,14 @@
       settings: { name: 'Velo Store Demo', address: 'Jl. Cipaganti No. 45, Bandung', phone: '0878-6849-5852', paper: '58mm', footer: 'Terima kasih! Powered by Velo POS' },
       categories: ['Umum', 'Minuman', 'Makanan', 'Jasa', 'Bengkel', 'Laundry'],
       accounts: [
-        { id: 'acc_cash', name: 'Cash', balance: 450000 },
+        { id: 'acc_cash', name: 'Cash', balance: 214000 },
         { id: 'acc_qris', name: 'QRIS', balance: 0 },
         { id: 'acc_transfer', name: 'Transfer Bank', balance: 0 }
       ],
+      staffs: [
+        { id: 'st_owner', name: 'Owner / Admin', role: 'Admin', pin: '0000' }
+      ],
+      activeStaffId: 'st_owner',
       parties: [
         { id: 'pt_umum', name: 'Penjualan Tunai', phone: '', role: 'Pelanggan' },
         { id: 'pt_1', name: 'Budi Santoso', phone: '08123456789', role: 'Pelanggan' },
@@ -1353,6 +1427,8 @@
     if (!db.accounts.some(a => a.id === 'acc_qris')) db.accounts.push({ id: 'acc_qris', name: 'QRIS', balance: 0 });
     if (!db.accounts.some(a => a.id === 'acc_transfer')) db.accounts.push({ id: 'acc_transfer', name: 'Transfer Bank', balance: 0 });
     if (!db._tierLockedManual) db.tier = 'profesional';
+    if (!db.staffs || !db.staffs.length) db.staffs = [{ id: 'st_owner', name: 'Owner / Admin', role: 'Admin', pin: '0000' }];
+    if (!db.activeStaffId) db.activeStaffId = db.staffs[0].id;
     saveDB();
     renderAll();
   }
@@ -1377,6 +1453,9 @@
     pill.textContent = tName + ' ▾';
     pill.className = 'tier-pill tier-' + (db.tier || 'starter');
 
+    const actSt = (db.staffs || []).find(s => s.id === db.activeStaffId) || { name: 'Owner / Admin', role: 'Admin' };
+    const stSub = document.getElementById('activeStaffSub');
+    if (stSub) stSub.textContent = `Aktif: ${actSt.name} (${actSt.role})`;
     renderBeranda();
     renderTxList();
     renderParties();
@@ -1593,6 +1672,7 @@
       id: 'VELO-' + String(Date.now()).slice(-5),
       type: qeType, date: new Date().toISOString(),
       party: document.getElementById('qeParty').value,
+      staff: getActiveStaffName(),
       accountId: accId, note: document.getElementById('qeNote').value.trim(),
       total: val, paid: val, change: 0,
       items: [{ name: qeType + ' (Entri Cepat)', qty: 1, price: val }]
@@ -1757,6 +1837,7 @@
       type: 'Penjualan',
       date: new Date().toISOString(),
       party: csPartyName,
+      staff: getActiveStaffName(),
       accountId: accId,
       note: document.getElementById('csNote').value.trim(),
       total: grand,
@@ -1823,6 +1904,7 @@
       id: 'VELO-' + String(Date.now()).slice(-5),
       type: 'Penjualan', date: new Date().toISOString(),
       party: document.getElementById('chkParty').value,
+      staff: getActiveStaffName(),
       accountId: accId, note: document.getElementById('chkNote').value.trim(),
       total: tot, paid, change: paid - tot, items: JSON.parse(JSON.stringify(cart))
     };
@@ -2010,12 +2092,114 @@
     saveDB(); openAccountsPage(); renderAll(); showToast('Akun ditambahkan');
   }
 
-  // --- REPORTS MENU & INTERACTIVE REPORT ENGINE (v2.4) ---
+  // --- STAFF & PIN LOGIN HELPERS (v2.5) ---
+  function getActiveStaffName() {
+    const s = (db.staffs || []).find(x => x.id === db.activeStaffId);
+    return s ? s.name : 'Owner / Admin';
+  }
+  function openAddStaffModal() {
+    document.getElementById('stName').value = '';
+    document.getElementById('stRole').value = 'Kasir';
+    document.getElementById('stPin').value = '';
+    openModal('staffModal');
+  }
+  function saveStaff() {
+    const name = document.getElementById('stName').value.trim();
+    const role = document.getElementById('stRole').value;
+    const pin = document.getElementById('stPin').value.trim();
+    if (!name) return showToast('Nama staf wajib diisi');
+    if (!/^\d{4,6}$/.test(pin)) return showToast('PIN harus 4–6 digit angka');
+    db.staffs.push({ id: 'st_' + Date.now(), name, role, pin });
+    saveDB();
+    closeModal('staffModal');
+    renderAll();
+    if (document.getElementById('spReportDetail').classList.contains('open') && activeReportKey === 'staf') renderReportDetail();
+    showToast(`Staf "${name}" ditambahkan`);
+  }
+  function deleteStaff(id) {
+    if (id === 'st_owner') return showToast('Admin utama tidak bisa dihapus');
+    if (!confirm('Hapus staf ini?')) return;
+    db.staffs = db.staffs.filter(s => s.id !== id);
+    if (db.activeStaffId === id) db.activeStaffId = db.staffs[0].id;
+    saveDB(); renderAll();
+    if (activeReportKey === 'staf') renderReportDetail();
+    showToast('Staf dihapus');
+  }
+  function openStaffLoginModal() {
+    document.getElementById('loginStaffSelect').innerHTML = db.staffs.map(s => `<option value="${s.id}" ${s.id===db.activeStaffId?'selected':''}>${esc(s.name)} (${esc(s.role)})</option>`).join('');
+    document.getElementById('loginStaffPin').value = '';
+    openModal('staffLoginModal');
+  }
+  function submitStaffLogin() {
+    const id = document.getElementById('loginStaffSelect').value;
+    const pin = document.getElementById('loginStaffPin').value.trim();
+    const st = db.staffs.find(s => s.id === id);
+    if (!st) return;
+    if (st.pin !== pin) return showToast('PIN salah! Coba lagi.');
+    db.activeStaffId = st.id;
+    saveDB();
+    closeModal('staffLoginModal');
+    renderAll();
+    if (document.getElementById('spReportDetail').classList.contains('open') && activeReportKey === 'staf') renderReportDetail();
+    showToast(`Login berhasil: ${st.name}`);
+  }
+
+  // --- REPORTS MENU, SUB-MENUS & INTERACTIVE REPORT ENGINE (v2.5) ---
   let activeReportKey = 'penjualan';
   let repPeriod = 'month';
   let repCustomStart = null;
   let repCustomEnd = null;
   let lastReportExportRows = [];
+
+  const REPORT_GROUPS = {
+    grp_transaksi: {
+      title: 'Laporan Transaksi',
+      items: [
+        { key:'penjualan', title:'Laporan Penjualan' },
+        { key:'pembelian', title:'Laporan Pembelian' },
+        { key:'retur_penjualan', title:'Laporan Retur Penjualan' },
+        { key:'retur_pembelian', title:'Laporan Retur Pembelian' },
+        { key:'bukuharian', title:'Buku Harian' },
+        { key:'semuatransaksi', title:'Laporan Semua Transaksi' },
+        { key:'labarugi', title:'Laporan Laba & Rugi', isNew:true }
+      ]
+    },
+    grp_pihak: {
+      title: 'Laporan Pihak',
+      items: [
+        { key:'transaksipihak', title:'Laporan Transaksi Pihak' },
+        { key:'pihak', title:'Laporan Semua Pihak' }
+      ]
+    },
+    grp_inventaris: {
+      title: 'Laporan Inventaris',
+      items: [
+        { key:'inv_detail', title:'Laporan Detail Item' },
+        { key:'inventaris', title:'Laporan Daftar Item', isNew:true },
+        { key:'inv_lowstock', title:'Laporan Ringkasan Stok Menipis' },
+        { key:'inv_stockqty', title:'Laporan Jumlah Stok' }
+      ]
+    },
+    grp_inout: {
+      title: 'Laporan Pemasukan & Pengeluaran',
+      items: [
+        { key:'pemasukanpengeluaran', title:'Laporan Pemasukan & Pengeluaran' },
+        { key:'kat_pemasukan', title:'Kategori Pemasukan' },
+        { key:'kat_pengeluaran', title:'Kategori Pengeluaran' }
+      ]
+    },
+    grp_status: {
+      title: 'Laporan Status Usaha',
+      items: [
+        { key:'staf', title:'Laporan Staf', isNew:true },
+        { key:'kas', title:'Laporan Kas' },
+        { key:'bank', title:'Laporan Bank' },
+        { key:'diskon', title:'Laporan Diskon' },
+        { key:'pajak_penjualan', title:'Pajak Penjualan' },
+        { key:'pajak_pembelian', title:'Pajak Pembelian' }
+      ]
+    }
+  };
 
   const REPORT_DEFS = {
     populer: [
@@ -2025,20 +2209,20 @@
       { key:'labarugi', title:'Laporan Laba & Rugi', isNew:true, ico:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>' },
       { key:'transaksipihak', title:'Laporan Transaksi Pihak', ico:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>' },
       { key:'kas', title:'Laporan Kas', ico:'<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>' },
-      { key:'bank', title:'Laporan Bank & QRIS', ico:'<path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>' },
+      { key:'bank', title:'Laporan Bank', ico:'<path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>' },
       { key:'staf', title:'Laporan Staf', isNew:true, ico:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' }
     ],
     semua: [
-      { key:'transaksi', title:'Laporan Transaksi', ico:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/>' },
-      { key:'pihak', title:'Laporan Pihak', ico:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>' },
-      { key:'inventaris', title:'Laporan Inventaris', ico:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>' },
-      { key:'pemasukanpengeluaran', title:'Laporan Pemasukan & Pengeluaran', ico:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' },
-      { key:'statususaha', title:'Laporan Status Usaha (Neraca)', ico:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' }
+      { group:'grp_transaksi', title:'Laporan Transaksi', ico:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/>' },
+      { group:'grp_pihak', title:'Laporan Pihak', ico:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>' },
+      { group:'grp_inventaris', title:'Laporan Inventaris', ico:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>' },
+      { group:'grp_inout', title:'Laporan Pemasukan & Pengeluaran', ico:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' },
+      { group:'grp_status', title:'Laporan Status Usaha', ico:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>' }
     ]
   };
 
   function openReportsPage() {
-    const renderRows = (arr) => arr.map(r => `
+    const renderPop = (arr) => arr.map(r => `
       <div class="ml-row" onclick="openReportDetail('${r.key}')">
         <div class="ml-left">
           <div class="ml-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${r.ico}</svg></div>
@@ -2048,22 +2232,53 @@
       </div>
     `).join('');
 
+    const renderGroups = (arr) => arr.map(g => `
+      <div class="ml-row" onclick="openReportGroup('${g.group}')">
+        <div class="ml-left">
+          <div class="ml-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${g.ico}</svg></div>
+          <div class="ml-title">${g.title}</div>
+        </div>
+        <span style="color:var(--text-3);font-size:18px;">›</span>
+      </div>
+    `).join('');
+
     document.getElementById('reportsBody').innerHTML = `
       <div class="section-title" style="margin-top:2px;">Laporan Populer</div>
-      <div class="card menu-list">${renderRows(REPORT_DEFS.populer)}</div>
+      <div class="card menu-list">${renderPop(REPORT_DEFS.populer)}</div>
       <div class="section-title">Lihat Semua Laporan</div>
-      <div class="card menu-list">${renderRows(REPORT_DEFS.semua)}</div>
+      <div class="card menu-list">${renderGroups(REPORT_DEFS.semua)}</div>
     `;
     document.getElementById('spReports').classList.add('open');
   }
 
+  function openReportGroup(groupKey) {
+    const grp = REPORT_GROUPS[groupKey];
+    if (!grp) return;
+    document.getElementById('rgTitle').textContent = grp.title;
+    document.getElementById('rgBody').innerHTML = `
+      <div class="card menu-list">
+        ${grp.items.map(it => `
+          <div class="ml-row" onclick="openReportDetail('${it.key}')">
+            <div class="ml-title" style="font-size:14.5px;">${it.title}${it.isNew ? '<span class="rep-badge-new">Baru</span>' : ''}</div>
+            <span style="color:var(--text-3);font-size:18px;">›</span>
+          </div>
+        `).join('')}
+      </div>`;
+    document.getElementById('spReportGroup').classList.add('open');
+  }
+
+  function getReportTitleByKey(key) {
+    for (const r of REPORT_DEFS.populer) if (r.key === key) return r.title;
+    for (const g of Object.values(REPORT_GROUPS)) {
+      for (const it of g.items) if (it.key === key) return it.title;
+    }
+    return 'Laporan';
+  }
+
   function openReportDetail(key) {
     activeReportKey = key;
-    const allDefs = [...REPORT_DEFS.populer, ...REPORT_DEFS.semua];
-    const def = allDefs.find(x => x.key === key) || { title: 'Laporan' };
-    document.getElementById('rdTitle').textContent = def.title;
-    // Hide date filter only for snapshot reports (inventaris, pihak) if preferred, or keep it visible for consistency
-    const hidePeriod = (key === 'inventaris' || key === 'pihak');
+    document.getElementById('rdTitle').textContent = getReportTitleByKey(key);
+    const hidePeriod = ['inventaris', 'inv_detail', 'inv_lowstock', 'inv_stockqty', 'pihak'].includes(key);
     document.getElementById('rdPeriodBar').style.display = hidePeriod ? 'none' : 'flex';
     renderReportDetail();
     document.getElementById('spReportDetail').classList.add('open');
@@ -2075,18 +2290,13 @@
     document.getElementById('rpCustomEnd').value = repCustomEnd || todayIso;
     openModal('periodModal');
   }
-  function applyReportPeriod(p) {
-    repPeriod = p;
-    closeModal('periodModal');
-    renderReportDetail();
-  }
+  function applyReportPeriod(p) { repPeriod = p; closeModal('periodModal'); renderReportDetail(); }
   function applyCustomPeriod() {
     const s = document.getElementById('rpCustomStart').value;
     const e = document.getElementById('rpCustomEnd').value;
     if (!s || !e) return showToast('Pilih tanggal awal & akhir');
     repCustomStart = s; repCustomEnd = e; repPeriod = 'custom';
-    closeModal('periodModal');
-    renderReportDetail();
+    closeModal('periodModal'); renderReportDetail();
   }
 
   function getReportDateBounds() {
@@ -2136,14 +2346,14 @@
   function renderTxRowsHTML(list) {
     if (!list.length) return repEmptyHTML();
     return `<div class="card menu-list">${list.map(t => {
-      const isOut = t.type==='Pembelian' || t.type==='Pengeluaran';
+      const isOut = t.type==='Pembelian' || t.type==='Pengeluaran' || t.type==='Retur Penjualan';
       const acc = db.accounts.find(a => a.id === t.accountId);
       const itemSummary = (t.items||[]).map(i => `${i.name} (${i.qty}x)`).join(', ');
       return `<div class="ml-row" onclick="openReceiptById('${t.id}')">
         <div class="ml-left" style="flex:1;">
           <div style="min-width:0;">
             <div class="ml-title">${esc(t.party)} <span class="badge ${isOut?'b-out':'b-in'}">${t.type}</span></div>
-            <div class="ml-sub">${t.id} • ${fmtDate(t.date)} ${fmtTime(t.date)} • ${esc(acc ? acc.name : 'Cash')}</div>
+            <div class="ml-sub">${t.id} • ${fmtDate(t.date)} ${fmtTime(t.date)} • ${esc(acc ? acc.name : 'Cash')} • ${esc(t.staff || 'Owner / Admin')}</div>
             ${itemSummary ? `<div style="font-size:11.5px;color:var(--text-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(itemSummary)}</div>` : ''}
           </div>
         </div>
@@ -2162,15 +2372,16 @@
     const key = activeReportKey;
     lastReportExportRows = [];
 
-    if (key === 'penjualan') {
-      const list = pTxs.filter(t => t.type === 'Penjualan');
+    if (key === 'penjualan' || key === 'pembelian' || key === 'retur_penjualan' || key === 'retur_pembelian') {
+      const typeMap = { penjualan:'Penjualan', pembelian:'Pembelian', retur_penjualan:'Retur Penjualan', retur_pembelian:'Retur Pembelian' };
+      const targetType = typeMap[key];
+      const list = pTxs.filter(t => t.type === targetType);
       const total = list.reduce((s,t)=>s+t.total, 0);
-      const avg = list.length ? Math.round(total / list.length) : 0;
-      lastReportExportRows = [['No Struk','Tanggal','Pelanggan','Akun','Item','Total'], ...list.map(t=>[t.id, fmtDate(t.date), t.party, (db.accounts.find(a=>a.id===t.accountId)||{}).name||'Cash', (t.items||[]).map(i=>i.name+'('+i.qty+'x)').join('; '), t.total])];
+      lastReportExportRows = [['No Struk','Tanggal','Pihak','Akun','Staf','Total'], ...list.map(t=>[t.id, fmtDate(t.date), t.party, (db.accounts.find(a=>a.id===t.accountId)||{}).name||'Cash', t.staff||'Owner / Admin', t.total])];
       body.innerHTML = (list.length ? `
         <div class="rep-summary-grid">
-          <div class="rep-stat navy"><div class="rep-stat-lbl">Total Penjualan</div><div class="rep-stat-val num">${rp(total)}</div></div>
-          <div class="rep-stat"><div class="rep-stat-lbl">Jumlah Nota / Rata-rata</div><div class="rep-stat-val num">${list.length} nota</div><div style="font-size:11px;color:var(--text-2);margin-top:2px;">Avg: ${rp(avg)}</div></div>
+          <div class="rep-stat navy"><div class="rep-stat-lbl">Total ${targetType}</div><div class="rep-stat-val num">${rp(total)}</div></div>
+          <div class="rep-stat"><div class="rep-stat-lbl">Jumlah Transaksi</div><div class="rep-stat-val num">${list.length} nota</div></div>
         </div>` : '') + renderTxRowsHTML(list);
 
     } else if (key === 'bukuharian') {
@@ -2206,10 +2417,10 @@
         </div>
       `).join('');
 
-    } else if (key === 'semuatransaksi' || key === 'transaksi') {
+    } else if (key === 'semuatransaksi') {
       const inSum = pTxs.filter(t=>t.type==='Penjualan'||t.type==='Uang Masuk').reduce((s,t)=>s+t.total,0);
       const outSum = pTxs.filter(t=>t.type==='Pembelian'||t.type==='Pengeluaran').reduce((s,t)=>s+t.total,0);
-      lastReportExportRows = [['No Struk','Tipe','Tanggal','Pihak','Total'], ...pTxs.map(t=>[t.id, t.type, fmtDate(t.date), t.party, t.total])];
+      lastReportExportRows = [['No Struk','Tipe','Tanggal','Pihak','Staf','Total'], ...pTxs.map(t=>[t.id, t.type, fmtDate(t.date), t.party, t.staff||'Owner / Admin', t.total])];
       body.innerHTML = (pTxs.length ? `
         <div class="rep-summary-grid">
           <div class="rep-stat"><div class="rep-stat-lbl">Total Masuk</div><div class="rep-stat-val num" style="color:var(--green-600);">${rp(inSum)}</div></div>
@@ -2230,17 +2441,7 @@
       const grossProfit = salesRev - hpp;
       const netProfit = grossProfit + otherIn - opExp;
       const margin = salesRev > 0 ? Math.round((netProfit / salesRev) * 100) : 0;
-
-      lastReportExportRows = [
-        ['Komponen Laba Rugi','Nominal'],
-        ['Pendapatan Penjualan', salesRev],
-        ['Pemasukan Lain / Uang Masuk', otherIn],
-        ['Estimasi HPP (Modal Terjual)', -hpp],
-        ['Laba Kotor', grossProfit],
-        ['Pengeluaran Operasional', -opExp],
-        ['Pembelian / Kulakan Stok (Info Arus Kas)', buyCost],
-        ['Laba Bersih', netProfit]
-      ];
+      lastReportExportRows = [['Komponen','Nominal'], ['Penjualan', salesRev], ['Uang Masuk', otherIn], ['HPP', -hpp], ['Laba Kotor', grossProfit], ['Pengeluaran', -opExp], ['Laba Bersih', netProfit]];
       body.innerHTML = `
         <div class="rep-summary-grid">
           <div class="rep-stat navy"><div class="rep-stat-lbl">Laba Bersih</div><div class="rep-stat-val num">${rp(netProfit)}</div><div style="font-size:11px;color:#7DD3FC;margin-top:2px;">Margin: ${margin}%</div></div>
@@ -2253,8 +2454,7 @@
           <div class="ml-row"><div class="ml-title">Pengeluaran Operasional</div><div class="num" style="font-weight:700;color:var(--red-600);">-${rp(opExp)}</div></div>
           <div class="ml-row"><div class="ml-title" style="color:var(--text-2);">Info: Pembelian / Kulakan Stok</div><div class="num" style="font-weight:600;color:var(--text-2);">${rp(buyCost)}</div></div>
           <div class="ml-row"><div class="ml-title" style="font-weight:800;">ESTIMASI LABA BERSIH</div><div class="num" style="font-size:16px;font-weight:800;color:${netProfit>=0?'var(--green-600)':'var(--red-600)'};">${rp(netProfit)}</div></div>
-        </div>
-      `;
+        </div>`;
 
     } else if (key === 'transaksipihak') {
       if (!pTxs.length) { body.innerHTML = repEmptyHTML(); return; }
@@ -2266,19 +2466,18 @@
         if (t.type==='Pembelian'||t.type==='Pengeluaran') map[pn].outSum += t.total; else map[pn].inSum += t.total;
       });
       const rows = Object.values(map).sort((a,b)=>(b.inSum+b.outSum)-(a.inSum+a.outSum));
-      lastReportExportRows = [['Nama Pihak','Jumlah Transaksi','Total Masuk','Total Keluar'], ...rows.map(r=>[r.name, r.count, r.inSum, r.outSum])];
+      lastReportExportRows = [['Nama Pihak','Transaksi','Masuk','Keluar'], ...rows.map(r=>[r.name, r.count, r.inSum, r.outSum])];
       body.innerHTML = `<div class="card menu-list">${rows.map(r => `
         <div class="ml-row">
           <div class="ml-left">
             <div class="inv-avatar">${esc(r.name.slice(0,2).toUpperCase())}</div>
-            <div><div class="ml-title">${esc(r.name)}</div><div class="ml-sub">${r.count} transaksi pada periode ini</div></div>
+            <div><div class="ml-title">${esc(r.name)}</div><div class="ml-sub">${r.count} transaksi</div></div>
           </div>
           <div style="text-align:right;">
             ${r.inSum > 0 ? `<div class="num" style="font-weight:800;color:var(--green-600);">+${rp(r.inSum)}</div>` : ''}
             ${r.outSum > 0 ? `<div class="num" style="font-weight:800;color:var(--red-600);">-${rp(r.outSum)}</div>` : ''}
           </div>
-        </div>
-      `).join('')}</div>`;
+        </div>`).join('')}</div>`;
 
     } else if (key === 'kas') {
       const cashAcc = db.accounts.find(a => a.id === 'acc_cash') || { name:'Cash', balance:0 };
@@ -2288,7 +2487,7 @@
       lastReportExportRows = [['No Struk','Tanggal','Tipe','Pihak','Total'], ...list.map(t=>[t.id, fmtDate(t.date), t.type, t.party, t.total])];
       body.innerHTML = `
         <div class="rep-summary-grid">
-          <div class="rep-stat navy"><div class="rep-stat-lbl">Saldo Kas (Cash) Saat Ini</div><div class="rep-stat-val num">${rp(cashAcc.balance)}</div></div>
+          <div class="rep-stat navy"><div class="rep-stat-lbl">Saldo Kas (Cash)</div><div class="rep-stat-val num">${rp(cashAcc.balance)}</div></div>
           <div class="rep-stat"><div class="rep-stat-lbl">Arus Kas Periode Ini</div><div class="num" style="font-size:13px;font-weight:700;color:var(--green-600);margin-top:4px;">+${rp(inSum)}</div><div class="num" style="font-size:13px;font-weight:700;color:var(--red-600);">-${rp(outSum)}</div></div>
         </div>` + renderTxRowsHTML(list);
 
@@ -2301,28 +2500,46 @@
       body.innerHTML = `
         <div class="rep-summary-grid">
           <div class="rep-stat navy"><div class="rep-stat-lbl">Total Saldo Bank & QRIS</div><div class="rep-stat-val num">${rp(bankBal)}</div></div>
-          <div class="rep-stat"><div class="rep-stat-lbl">Jumlah Transaksi Non-Tunai</div><div class="rep-stat-val num">${list.length} nota</div></div>
+          <div class="rep-stat"><div class="rep-stat-lbl">Transaksi Non-Tunai</div><div class="rep-stat-val num">${list.length} nota</div></div>
         </div>
         <div class="card menu-list" style="margin-bottom:12px;">
           ${bankAccs.map(a => `<div class="ml-row"><div class="ml-title">${esc(a.name)}</div><div class="num" style="font-weight:800;">${rp(a.balance)}</div></div>`).join('')}
         </div>` + renderTxRowsHTML(list);
 
     } else if (key === 'staf') {
-      const total = pTxs.filter(t=>t.type==='Penjualan').reduce((s,t)=>s+t.total,0);
-      lastReportExportRows = [['Nama Staf','Peran','Total Transaksi','Total Omzet'], ['Owner / Admin', 'Admin Utama', pTxs.length, total]];
-      body.innerHTML = `
-        <div class="card menu-list">
-          <div class="ml-row">
-            <div class="ml-left">
-              <div class="inv-avatar">AD</div>
-              <div><div class="ml-title">Owner / Admin (${esc(db.settings.name)})</div><div class="ml-sub">${pTxs.length} transaksi tercatat pada periode ini</div></div>
+      const activeSt = db.staffs.find(s => s.id === db.activeStaffId) || db.staffs[0];
+      lastReportExportRows = [['Nama Staf','Peran','Jumlah Transaksi','Total Omzet']];
+      const staffCards = db.staffs.map(s => {
+        const sTxs = pTxs.filter(t => (t.staff || 'Owner / Admin') === s.name);
+        const sSales = sTxs.filter(t => t.type === 'Penjualan').reduce((sum,t)=>sum+t.total, 0);
+        lastReportExportRows.push([s.name, s.role, sTxs.length, sSales]);
+        const isAct = s.id === db.activeStaffId;
+        return `<div class="ml-row">
+          <div class="ml-left">
+            <div class="inv-avatar">${esc(s.name.slice(0,2).toUpperCase())}</div>
+            <div>
+              <div class="ml-title">${esc(s.name)} ${isAct ? '<span class="badge b-in">Aktif</span>' : ''}</div>
+              <div class="ml-sub">${esc(s.role)} • PIN: •••• • ${sTxs.length} transaksi</div>
             </div>
-            <div class="num" style="font-weight:800;color:var(--blue-600);">${rp(total)}</div>
           </div>
-        </div>
-        <div class="card" style="font-size:12.5px;color:var(--text-2);line-height:1.5;">
-          <b>Info Multi-Staf:</b> Seluruh transaksi saat ini dicatat atas nama Admin Utama. Penambahan akun kasir/staf terpisah akan aktif di modul Kelola Staf.
+          <div style="text-align:right;display:flex;align-items:center;gap:8px;">
+            <div class="num" style="font-weight:800;color:var(--blue-600);">${rp(sSales)}</div>
+            ${s.id !== 'st_owner' ? `<button class="btn btn-danger btn-sm" style="padding:4px 8px;font-size:11px;" onclick="deleteStaff('${s.id}')">Hapus</button>` : ''}
+          </div>
         </div>`;
+      }).join('');
+
+      body.innerHTML = `
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="openAddStaffModal()">+ Tambah Staf / Kasir</button>
+          <button type="button" class="btn btn-navy btn-sm" style="flex:1;" onclick="openStaffLoginModal()">🔑 Login PIN / Ganti Kasir</button>
+        </div>
+        <div class="card" style="background:var(--blue-50);border-color:var(--blue-100);padding:12px 14px;margin-bottom:12px;">
+          <div style="font-size:12px;color:var(--text-2);">Kasir Sedang Login Saat Ini:</div>
+          <div style="font-size:15px;font-weight:800;color:var(--navy-900);margin-top:2px;">${esc(activeSt.name)} (${esc(activeSt.role)})</div>
+          <div style="font-size:11px;color:var(--text-2);margin-top:2px;">PIN default Owner/Admin: <b>0000</b></div>
+        </div>
+        <div class="card menu-list">${staffCards}</div>`;
 
     } else if (key === 'pihak') {
       const pel = db.parties.filter(p => p.role === 'Pelanggan').length;
@@ -2340,72 +2557,54 @@
               <div><div class="ml-title">${esc(p.name)}</div><div class="ml-sub">${esc(p.role)} ${p.phone ? '• ' + esc(p.phone) : ''}</div></div>
             </div>
             <span class="badge b-in">Lunas</span>
-          </div>
-        `).join('')}</div>`;
+          </div>`).join('')}</div>`;
 
-    } else if (key === 'inventaris') {
-      const totalItems = db.items.length;
-      const totalStockVal = db.items.reduce((s,i)=>s + (Number(i.stock||0) * Number(i.cost||0)), 0);
-      const totalRetailVal = db.items.reduce((s,i)=>s + (Number(i.stock||0) * Number(i.price||0)), 0);
-      lastReportExportRows = [['Nama Item','Kategori','Jenis','Harga Jual','Harga Modal','Stok','Satuan','Nilai Stok (Modal)'], ...db.items.map(i=>[i.name, i.category, i.type, i.price, i.cost||0, i.stock||0, i.unit||'PCS', (i.stock||0)*(i.cost||0)])];
+    } else if (key === 'inventaris' || key === 'inv_detail' || key === 'inv_lowstock' || key === 'inv_stockqty') {
+      let list = db.items;
+      if (key === 'inv_lowstock') list = db.items.filter(i => i.type === 'Produk' && Number(i.stock||0) <= 5);
+      const totalStockVal = list.reduce((s,i)=>s + (Number(i.stock||0) * Number(i.cost||0)), 0);
+      const totalQty = list.reduce((s,i)=>s + Number(i.stock||0), 0);
+      lastReportExportRows = [['Nama Item','Kategori','Jenis','Harga Jual','Modal','Stok','Satuan','Nilai Modal'], ...list.map(i=>[i.name, i.category, i.type, i.price, i.cost||0, i.stock||0, i.unit||'PCS', (i.stock||0)*(i.cost||0)])];
       body.innerHTML = `
         <div class="rep-summary-grid">
-          <div class="rep-stat navy"><div class="rep-stat-lbl">Nilai Aset Stok (Modal)</div><div class="rep-stat-val num">${rp(totalStockVal)}</div><div style="font-size:11px;color:#7DD3FC;margin-top:2px;">${totalItems} item terdaftar</div></div>
-          <div class="rep-stat"><div class="rep-stat-lbl">Potensi Omzet Stok</div><div class="rep-stat-val num">${rp(totalRetailVal)}</div></div>
+          <div class="rep-stat navy"><div class="rep-stat-lbl">Nilai Aset Stok (Modal)</div><div class="rep-stat-val num">${rp(totalStockVal)}</div></div>
+          <div class="rep-stat"><div class="rep-stat-lbl">Total Jumlah Stok</div><div class="rep-stat-val num">${totalQty} unit</div><div style="font-size:11px;color:var(--text-2);">${list.length} item</div></div>
         </div>
-        <div class="card menu-list">${db.items.length ? db.items.map(i => `
+        <div class="card menu-list">${list.length ? list.map(i => `
           <div class="ml-row" onclick="openItemModal('${i.id}')">
             <div class="ml-left">
               <div class="inv-avatar">${esc(i.name.slice(0,2).toUpperCase())}</div>
               <div><div class="ml-title">${esc(i.name)}</div><div class="ml-sub">${esc(i.category)} • Jual ${rp(i.price)} • Modal ${rp(i.cost||0)}</div></div>
             </div>
             <div style="text-align:right;">
-              <div class="num" style="font-weight:800;color:var(--navy-900);">${i.stock||0} ${esc(i.unit||'PCS')}</div>
+              <div class="num" style="font-weight:800;color:${(i.stock||0)<=5&&i.type==='Produk'?'var(--red-600)':'var(--navy-900)'};">${i.stock||0} ${esc(i.unit||'PCS')}</div>
               <div class="num" style="font-size:11px;color:var(--text-2);">${rp((i.stock||0)*(i.cost||0))}</div>
             </div>
-          </div>
-        `).join('') : repEmptyHTML('Belum ada item inventaris')}</div>`;
+          </div>`).join('') : repEmptyHTML(key==='inv_lowstock'?'Tidak ada stok yang menipis (≤ 5)':'Belum ada item inventaris')}</div>`;
 
-    } else if (key === 'pemasukanpengeluaran') {
+    } else if (key === 'pemasukanpengeluaran' || key === 'kat_pemasukan' || key === 'kat_pengeluaran') {
       const inList = pTxs.filter(t => t.type==='Penjualan'||t.type==='Uang Masuk');
       const outList = pTxs.filter(t => t.type==='Pembelian'||t.type==='Pengeluaran');
+      const showList = key === 'kat_pemasukan' ? inList : key === 'kat_pengeluaran' ? outList : pTxs;
       const inSum = inList.reduce((s,t)=>s+t.total,0);
       const outSum = outList.reduce((s,t)=>s+t.total,0);
-      lastReportExportRows = [['No Struk','Tanggal','Arus','Tipe','Pihak','Total'], ...pTxs.map(t=>[t.id, fmtDate(t.date), (t.type==='Pembelian'||t.type==='Pengeluaran')?'Keluar':'Masuk', t.type, t.party, t.total])];
+      lastReportExportRows = [['No Struk','Tanggal','Tipe','Pihak','Total'], ...showList.map(t=>[t.id, fmtDate(t.date), t.type, t.party, t.total])];
       body.innerHTML = `
         <div class="rep-summary-grid">
-          <div class="rep-stat"><div class="rep-stat-lbl">Total Pemasukan</div><div class="rep-stat-val num" style="color:var(--green-600);">${rp(inSum)}</div><div style="font-size:11px;color:var(--text-2);">${inList.length} transaksi</div></div>
-          <div class="rep-stat"><div class="rep-stat-lbl">Total Pengeluaran</div><div class="rep-stat-val num" style="color:var(--red-600);">${rp(outSum)}</div><div style="font-size:11px;color:var(--text-2);">${outList.length} transaksi</div></div>
-        </div>
-        <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:13.5px;font-weight:700;">Arus Kas Bersih (Selisih)</span>
-          <span class="num" style="font-size:16.5px;font-weight:800;color:${(inSum-outSum)>=0?'var(--blue-600)':'var(--red-600)'};">${rp(inSum - outSum)}</span>
-        </div>` + renderTxRowsHTML(pTxs);
+          <div class="rep-stat"><div class="rep-stat-lbl">Total Pemasukan</div><div class="rep-stat-val num" style="color:var(--green-600);">${rp(inSum)}</div></div>
+          <div class="rep-stat"><div class="rep-stat-lbl">Total Pengeluaran</div><div class="rep-stat-val num" style="color:var(--red-600);">${rp(outSum)}</div></div>
+        </div>` + renderTxRowsHTML(showList);
 
-    } else if (key === 'statususaha') {
-      const totalKas = db.accounts.reduce((s,a)=>s+Number(a.balance||0), 0);
-      const totalStok = db.items.reduce((s,i)=>s + (Number(i.stock||0) * Number(i.cost||0)), 0);
-      const totalAset = totalKas + totalStok;
-      const omzet = pTxs.filter(t=>t.type==='Penjualan').reduce((s,t)=>s+t.total,0);
-      lastReportExportRows = [
-        ['Pos Status Usaha / Neraca','Nilai'],
-        ['Kas & Bank', totalKas],
-        ['Nilai Persediaan / Stok (Modal)', totalStok],
-        ['Total Aset Lancar', totalAset],
-        ['Total Kewajiban / Utang', 0],
-        ['Ekuitas / Kekayaan Bersih', totalAset]
-      ];
+    } else if (key === 'diskon' || key === 'pajak_penjualan' || key === 'pajak_pembelian') {
+      const field = key === 'diskon' ? 'discount' : 'tax';
+      const list = pTxs.filter(t => Number(t[field] || 0) > 0 && (key==='pajak_pembelian' ? t.type==='Pembelian' : t.type==='Penjualan'));
+      const totalVal = list.reduce((s,t)=>s+Number(t[field]||0), 0);
+      lastReportExportRows = [['No Struk','Tanggal','Pihak','Total Nota', key], ...list.map(t=>[t.id, fmtDate(t.date), t.party, t.total, t[field]||0])];
       body.innerHTML = `
         <div class="rep-summary-grid">
-          <div class="rep-stat navy"><div class="rep-stat-lbl">Total Kekayaan / Aset</div><div class="rep-stat-val num">${rp(totalAset)}</div></div>
-          <div class="rep-stat"><div class="rep-stat-lbl">Omzet Periode Ini</div><div class="rep-stat-val num">${rp(omzet)}</div></div>
-        </div>
-        <div class="card menu-list">
-          <div class="ml-row"><div class="ml-title">Aset: Saldo Kas & Bank</div><div class="num" style="font-weight:800;">${rp(totalKas)}</div></div>
-          <div class="ml-row"><div class="ml-title">Aset: Nilai Persediaan Stok</div><div class="num" style="font-weight:800;">${rp(totalStok)}</div></div>
-          <div class="ml-row"><div class="ml-title">Kewajiban / Utang Usaha</div><div class="num" style="font-weight:700;color:var(--text-2);">Rp 0</div></div>
-          <div class="ml-row"><div class="ml-title" style="font-weight:800;">EKUITAS / MODAL BERSIH</div><div class="num" style="font-size:16px;font-weight:800;color:var(--blue-600);">${rp(totalAset)}</div></div>
-        </div>`;
+          <div class="rep-stat navy"><div class="rep-stat-lbl">Total ${getReportTitleByKey(key)}</div><div class="rep-stat-val num">${rp(totalVal)}</div></div>
+          <div class="rep-stat"><div class="rep-stat-lbl">Transaksi Terkait</div><div class="rep-stat-val num">${list.length} nota</div></div>
+        </div>` + (list.length ? renderTxRowsHTML(list) : repEmptyHTML(`Belum ada data ${getReportTitleByKey(key)} pada periode ini`));
     }
   }
 
@@ -2564,7 +2763,7 @@
   };
 
   // Patch subpage openers to push history
-  ['openQuickEntry', 'openFastPOS', 'openConfirmSalePage', 'openReportsPage', 'openReportDetail', 'openAccountsPage', 'openUpgradePage'].forEach(fnName => {
+  ['openQuickEntry', 'openFastPOS', 'openConfirmSalePage', 'openReportsPage', 'openReportGroup', 'openReportDetail', 'openAccountsPage', 'openUpgradePage'].forEach(fnName => {
     const orig = window[fnName];
     if (typeof orig === 'function') {
       window[fnName] = function(...args) {
