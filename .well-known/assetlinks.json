@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.raharjatech.pos",
+        "sha256_cert_fingerprints": ["6D:7B:D1:24:90:FF:3B:24:EE:73:95:DF:AC:79:71:4C:ED:F3:8D:79:89:79:BA:00:D3:61:AA:4A:AE:07:6E:37"]
+      }
+    }]
