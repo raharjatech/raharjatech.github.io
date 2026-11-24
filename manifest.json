@@ -1,7 +1,7 @@
 {
   "name": "Velo POS",
   "short_name": "Velo POS",
-  "description": "Sistem Kasir & Pembukuan Modern untuk UMKM (Android & Windows) by Raharja Tech",
+  "description": "Aplikasi Kasir & Pembukuan Modern All-in-One untuk UMKM by Raharja Tech",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
