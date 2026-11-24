@@ -1,17 +1,17 @@
-const CACHE_NAME = 'raharja-pos-gh-v1';
+const CACHE_NAME = 'velo-pos-starter-v1';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './logo-pos-192.png',
-  './logo-pos-512.png'
+  './velo-icon-192.png',
+  './velo-icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).catch(() => {})
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -27,13 +27,11 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
     fetch(event.request)
-      .then((response) => {
-        if (response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
+      .then((res) => {
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
+        return res;
       })
-      .catch(() => caches.match(event.request).then((c) => c || caches.match('./index.html')))
+      .catch(() => caches.match(event.request))
   );
 });

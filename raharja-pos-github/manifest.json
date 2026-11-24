@@ -1,38 +1,25 @@
 {
-  "id": "./",
-  "name": "Raharja POS & Pembukuan",
-  "short_name": "Raharja POS",
-  "description": "Aplikasi Kasir POS, Stok Multi-Satuan, dan Pembukuan UMKM by Raharja Tech.",
+  "name": "Velo POS",
+  "short_name": "Velo POS",
+  "description": "Sistem Kasir & Pembukuan Modern untuk UMKM (Android & Windows) by Raharja Tech",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#00b87c",
-  "lang": "id",
-  "categories": [
-    "business",
-    "finance",
-    "productivity"
-  ],
+  "orientation": "any",
+  "background_color": "#0B1F3A",
+  "theme_color": "#0B1F3A",
   "icons": [
     {
-      "src": "logo-pos-192.png",
+      "src": "velo-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "logo-pos-512.png",
+      "src": "velo-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "logo-pos-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
