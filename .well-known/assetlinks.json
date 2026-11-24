@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "com.raharjatech.pos",
-        "sha256_cert_fingerprints": ["6D:7B:D1:24:90:FF:3B:24:EE:73:95:DF:AC:79:71:4C:ED:F3:8D:79:89:79:BA:00:D3:61:AA:4A:AE:07:6E:37"]
+        "package_name": "com.raharjatech.velopos",
+        "sha256_cert_fingerprints": ["68:A7:8E:61:2C:F9:91:F4:6F:BB:33:F1:D3:D7:8B:44:92:2E:A4:B8:A2:4C:2B:51:31:F8:58:FE:A1:0B:8A:76"]
       }
     }]
