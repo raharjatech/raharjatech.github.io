@@ -509,6 +509,42 @@
     .rep-empty svg { width: 64px; height: 64px; color: #CBD5E1; margin-bottom: 12px; }
     .rep-empty-title { font-size: 15.5px; font-weight: 700; color: var(--text-1); }
 
+
+    /* Login Screen Overlay (v2.7) */
+    .login-screen {
+      position: fixed; inset: 0; z-index: 200;
+      background: linear-gradient(160deg, var(--navy-950) 0%, var(--navy-900) 55%, #132F54 100%);
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .login-screen.open { display: flex; }
+    .login-card {
+      background: var(--surface); width: 100%; max-width: 390px;
+      border-radius: 24px; padding: 26px 22px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+    }
+    .login-logo {
+      width: 54px; height: 54px; border-radius: 16px;
+      background: linear-gradient(135deg, var(--navy-900), var(--blue-600));
+      color: #fff; font-weight: 800; font-size: 24px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px auto; box-shadow: 0 8px 20px rgba(37,99,235,0.28);
+    }
+    .btn-google {
+      background: #fff; color: #1F2937; border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 11px 14px; border-radius: var(--radius-md);
+      font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    }
+    .btn-google:active { background: var(--surface-2); }
+    .login-divider {
+      display: flex; align-items: center; gap: 10px; margin: 16px 0;
+      color: var(--text-3); font-size: 11.5px; font-weight: 600;
+    }
+    .login-divider::before, .login-divider::after {
+      content: ""; flex: 1; height: 1px; background: var(--border);
+    }
+
     #printArea { display: none; }
     @media print {
       body * { visibility: hidden !important; }
@@ -522,6 +558,38 @@
   </style>
 </head>
 <body>
+
+<!-- LOGIN SCREEN (v2.7: USERNAME + PIN + GOOGLE) -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">V</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:800;color:var(--navy-900);letter-spacing:-0.02em;">Velo POS</div>
+      <div style="font-size:12.5px;color:var(--text-2);margin-top:3px;">Masuk untuk mulai transaksi kasir</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Username / Staf</label>
+      <select id="lsStaffSelect" class="input" style="font-weight:600;"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">PIN Kasir (Default: 0000)</label>
+      <input type="password" inputmode="numeric" maxlength="6" id="lsPinInput" class="input num" placeholder="Masukkan PIN..." onkeydown="if(event.key==='Enter') doAppLogin()" />
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);margin-bottom:14px;cursor:pointer;">
+      <input type="checkbox" id="lsRemember" checked style="width:16px;height:16px;accent-color:var(--blue-600);" />
+      Ingat saya di perangkat ini
+    </label>
+    <button type="button" class="btn btn-primary btn-block" onclick="doAppLogin()">Masuk ke Kasir</button>
+
+    <div class="login-divider">ATAU</div>
+
+    <button type="button" class="btn-google" onclick="loginWithGoogleHybrid()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Masuk dengan Google
+    </button>
+    <div style="text-align:center;font-size:11px;color:var(--text-3);margin-top:14px;">Velo POS by Raharja Tech</div>
+  </div>
+</div>
 
 <div class="app-shell">
   <!-- Desktop Sidebar -->
@@ -628,6 +696,10 @@
           <option value="Uang Masuk">Uang Masuk</option>
           <option value="Pembelian">Pembelian</option>
           <option value="Pengeluaran">Pengeluaran</option>
+          <option value="Pemasukan Lain">Pemasukan Lain</option>
+          <option value="Retur Penjualan">Retur Penjualan</option>
+          <option value="Retur Pembelian">Retur Pembelian</option>
+          <option value="Penawaran">Penawaran</option>
         </select>
         <select id="txPeriodFilter" class="select-pill" onchange="renderTxList()">
           <option value="all">Semua Waktu</option>
@@ -674,6 +746,7 @@
           <option value="Jasa">Jasa</option>
         </select>
         <button class="select-pill" style="background:var(--blue-50);color:var(--blue-600);border-color:var(--blue-100);" onclick="openCategoryModal()">⚙ Kategori</button>
+        <button class="select-pill" style="background:var(--green-50);color:var(--green-600);border-color:#A7F3D0;" onclick="openGoogleSheetsPage()">📊 Import / Sync Sheets</button>
       </div>
       <div id="invListContainer"></div>
     </section>
@@ -717,6 +790,14 @@
 
       <div class="section-title">Data & Cadangan</div>
       <div class="card menu-list">
+        <div class="ml-row" onclick="openGoogleSheetsPage()">
+          <div class="ml-left"><div class="ml-ico" style="background:var(--green-50);color:var(--green-600);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div><div><div class="ml-title">Integrasi Google Sheets</div><div class="ml-sub">Import massal barang &amp; download ke Google Sheets</div></div></div>
+          <span>›</span>
+        </div>
+        <div class="ml-row" onclick="logoutApp()">
+          <div class="ml-left"><div class="ml-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><div><div class="ml-title">Kunci Layar / Logout Kasir</div><div class="ml-sub">Kembali ke layar login Username &amp; PIN</div></div></div>
+          <span>›</span>
+        </div>
         <div class="ml-row" onclick="exportCSV()">
           <div class="ml-left"><div class="ml-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div><div class="ml-title">Export Laporan CSV / Excel</div><div class="ml-sub">Unduh rekap seluruh transaksi</div></div></div>
           <span>›</span>
@@ -963,6 +1044,52 @@
   <div class="sp-body" style="max-width:600px;margin:0 auto;width:100%;" id="accountsBody"></div>
 </div>
 
+<!-- SUBPAGE: INTEGRASI GOOGLE SHEETS (OPSI A HYBRID) -->
+<div class="subpage" id="spGoogleSheets">
+  <div class="sp-head">
+    <button class="sp-back" onclick="closeSubpage('spGoogleSheets')">←</button>
+    <div class="sp-title">Integrasi Google Sheets</div>
+  </div>
+  <div class="sp-body" style="max-width:600px;margin:0 auto;width:100%;">
+    <div class="card" style="background:var(--green-50);border-color:#A7F3D0;">
+      <div style="font-size:14px;font-weight:800;color:var(--green-600);margin-bottom:4px;">Import Ribuan Barang dari Google Sheets</div>
+      <div style="font-size:12.5px;color:var(--text-2);line-height:1.5;margin-bottom:12px;">
+        Isi daftar produk Anda di Google Sheets sesuai format template, lalu tarik otomatis ke Velo POS lewat Link atau file CSV.
+      </div>
+      <button type="button" class="btn btn-outline btn-sm btn-block" style="background:#fff;" onclick="downloadItemsTemplateCSV()">1. Download Template Barang (Siap Buka di Sheets)</button>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;">2A. Tarik Langsung dari Link Google Sheets</div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;line-height:1.45;">
+        Di Google Sheets klik <b>Bagikan (Share) → Siapa saja yang memiliki link (Viewer)</b>, lalu tempel link-nya di sini:
+      </div>
+      <div class="form-group">
+        <input type="url" id="gsSheetUrl" class="input" placeholder="https://docs.google.com/spreadsheets/d/..." />
+      </div>
+      <button type="button" class="btn btn-green btn-block" id="btnFetchGS" onclick="importItemsFromGoogleSheetUrl()">⬇ Tarik Data Barang dari Link Sheets</button>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;">2B. Atau Upload File CSV dari Google Sheets</div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">
+        Di Google Sheets pilih <b>File → Download → Comma Separated Values (.csv)</b>, lalu pilih file-nya di sini (jalan 100% offline):
+      </div>
+      <input type="file" id="gsCsvFile" accept=".csv,text/csv" style="display:none;" onchange="importItemsFromCSVFile(event)" />
+      <button type="button" class="btn btn-primary btn-block" onclick="document.getElementById('gsCsvFile').click()">📂 Pilih File CSV Barang</button>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;">Export Data ke Google Sheets</div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">Unduh seluruh barang atau transaksi dalam format siap buka langsung di Google Sheets / Excel.</div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="btn btn-navy btn-sm" style="flex:1;" onclick="exportItemsCSV()">Export Barang</button>
+        <button type="button" class="btn btn-outline btn-sm" style="flex:1;" onclick="exportCSV()">Export Transaksi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- SUBPAGE: UPGRADE PAKET & LISENSI (LIKE REFERENCE) -->
 <div class="subpage" id="spUpgrade">
   <div class="sp-head">
@@ -1185,9 +1312,12 @@
       <div class="receipt-paper" id="receiptPreview"></div>
       <input type="tel" id="waTarget" class="input" placeholder="No. WA tujuan (opsional, kosongkan pilih kontak)" />
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-navy" style="flex:1;" onclick="window.print()">Cetak Thermal</button>
-      <button class="btn btn-green" style="flex:1;" onclick="shareWA()">Kirim WA</button>
+    <div class="modal-footer" style="flex-direction:column;gap:8px;">
+      <button class="btn btn-primary btn-block" id="btnConvertQuote" style="display:none;" onclick="convertQuoteToSale()">✅ Deal! Ubah jadi Penjualan</button>
+      <div style="display:flex;gap:10px;width:100%;">
+        <button class="btn btn-navy" style="flex:1;" onclick="window.print()">Cetak Thermal</button>
+        <button class="btn btn-green" style="flex:1;" onclick="shareWA()">Kirim WA</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1467,9 +1597,9 @@
     const now = new Date();
     const mTxs = db.txs.filter(t => { const d = new Date(t.date); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
     const salesSum = mTxs.filter(t => t.type==='Penjualan').reduce((s,t)=>s+t.total, 0);
-    const inSum = mTxs.filter(t => t.type==='Penjualan' || t.type==='Uang Masuk').reduce((s,t)=>s+t.total, 0);
+    const inSum = mTxs.filter(t => ['Penjualan','Uang Masuk','Pemasukan Lain','Retur Pembelian'].includes(t.type)).reduce((s,t)=>s+t.total, 0);
     const buySum = mTxs.filter(t => t.type==='Pembelian').reduce((s,t)=>s+t.total, 0);
-    const expSum = mTxs.filter(t => t.type==='Pengeluaran').reduce((s,t)=>s+t.total, 0);
+    const expSum = mTxs.filter(t => t.type==='Pengeluaran' || t.type==='Retur Penjualan').reduce((s,t)=>s+t.total, 0);
     const totalCash = db.accounts.reduce((s,a)=>s+Number(a.balance||0), 0);
 
     document.getElementById('dashSummary').innerHTML = `
@@ -1502,7 +1632,11 @@
       { lbl:'Pembelian', tier:'bisnis', fn:"if(requireTier('bisnis','Pembelian / Kulakan')) openQuickEntry('Pembelian')", ico:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>' },
       { lbl:'Pengeluaran', tier:'bisnis', fn:"if(requireTier('bisnis','Pengeluaran Operasional')) openQuickEntry('Pengeluaran')", ico:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M12 15V9M9 12l3-3 3 3"/>' },
       { lbl:'Kategori', tier:'starter', fn:"openCategoryModal()", ico:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>' },
-      { lbl:'Laba Rugi', tier:'profesional', fn:"if(requireTier('profesional','Laporan Laba Rugi & Neraca')) openReportsPage()", ico:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>' }
+      { lbl:'Laba Rugi', tier:'profesional', fn:"if(requireTier('profesional','Laporan Laba Rugi')) openReportDetail('labarugi')", ico:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>' },
+      { lbl:'Pemasukan Lain', tier:'bisnis', fn:"if(requireTier('bisnis','Pemasukan Lain')) openQuickEntry('Pemasukan Lain')", ico:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>' },
+      { lbl:'Retur Penjualan', tier:'bisnis', fn:"if(requireTier('bisnis','Retur Penjualan')) openQuickEntry('Retur Penjualan')", ico:'<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>' },
+      { lbl:'Retur Pembelian', tier:'bisnis', fn:"if(requireTier('bisnis','Retur Pembelian')) openQuickEntry('Retur Pembelian')", ico:'<polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/>' },
+      { lbl:'Penawaran', tier:'profesional', fn:"if(requireTier('profesional','Buat Penawaran Harga')) openQuickEntry('Penawaran')", ico:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' }
     ];
     document.getElementById('shortcutGrid').innerHTML = shortcuts.map(s => {
       const locked = !hasTier(s.tier);
@@ -1517,8 +1651,8 @@
     for (let i = 6; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate() - i);
       const ds = d.toDateString();
-      const dIn = db.txs.filter(t => new Date(t.date).toDateString()===ds && (t.type==='Penjualan'||t.type==='Uang Masuk')).reduce((s,t)=>s+t.total, 0);
-      const dOut = db.txs.filter(t => new Date(t.date).toDateString()===ds && (t.type==='Pembelian'||t.type==='Pengeluaran')).reduce((s,t)=>s+t.total, 0);
+      const dIn = db.txs.filter(t => new Date(t.date).toDateString()===ds && ['Penjualan','Uang Masuk','Pemasukan Lain','Retur Pembelian'].includes(t.type)).reduce((s,t)=>s+t.total, 0);
+      const dOut = db.txs.filter(t => new Date(t.date).toDateString()===ds && ['Pembelian','Pengeluaran','Retur Penjualan'].includes(t.type)).reduce((s,t)=>s+t.total, 0);
       totIn += dIn; totOut += dOut;
       maxVal = Math.max(maxVal, dIn, dOut);
       days.push({ lbl: d.toLocaleDateString('id-ID', { day:'2-digit', month:'short' }).split(' ')[0], dIn, dOut });
@@ -1635,7 +1769,9 @@
   function renderQETabs() {
     const types = [
       { k:'Penjualan', t:'starter' }, { k:'Uang Masuk', t:'starter' },
-      { k:'Pembelian', t:'bisnis' }, { k:'Pengeluaran', t:'bisnis' }
+      { k:'Pembelian', t:'bisnis' }, { k:'Pengeluaran', t:'bisnis' },
+      { k:'Pemasukan Lain', t:'bisnis' }, { k:'Retur Penjualan', t:'bisnis' },
+      { k:'Retur Pembelian', t:'bisnis' }, { k:'Penawaran', t:'profesional' }
     ];
     document.getElementById('qeTabs').innerHTML = types.map(x => {
       const active = qeType === x.k;
@@ -1667,22 +1803,27 @@
     const val = parseInt(calcStr, 10);
     if (!val || val <= 0) return showToast('Masukkan nominal lebih dari 0');
     const accId = document.getElementById('qeAccount').value;
-    const isOut = (qeType === 'Pembelian' || qeType === 'Pengeluaran');
+    const isQuote = (qeType === 'Penawaran');
+    const isOut = ['Pembelian', 'Pengeluaran', 'Retur Penjualan'].includes(qeType);
+    const noteVal = document.getElementById('qeNote').value.trim();
     const tx = {
-      id: 'VELO-' + String(Date.now()).slice(-5),
+      id: (isQuote ? 'QT-' : 'VELO-') + String(Date.now()).slice(-5),
       type: qeType, date: new Date().toISOString(),
       party: document.getElementById('qeParty').value,
       staff: getActiveStaffName(),
-      accountId: accId, note: document.getElementById('qeNote').value.trim(),
-      total: val, paid: val, change: 0,
-      items: [{ name: qeType + ' (Entri Cepat)', qty: 1, price: val }]
+      accountId: accId, note: noteVal,
+      total: val, paid: isQuote ? 0 : val, change: 0,
+      items: [{ name: noteVal ? `${qeType}: ${noteVal}` : `${qeType} (Entri Cepat)`, qty: 1, price: val }]
     };
     db.txs.unshift(tx);
-    const acc = db.accounts.find(a => a.id === accId);
-    if (acc) acc.balance = Number(acc.balance||0) + (isOut ? -val : val);
+    // Penawaran does NOT change Cash/Bank balance until converted to Penjualan
+    if (!isQuote) {
+      const acc = db.accounts.find(a => a.id === accId);
+      if (acc) acc.balance = Number(acc.balance||0) + (isOut ? -val : val);
+    }
     saveDB(); closeSubpage('spQuickEntry'); renderAll();
     showToast(qeType + ' berhasil dicatat');
-    if (qeType === 'Penjualan') openReceipt(tx);
+    if (qeType === 'Penjualan' || isQuote) openReceipt(tx);
   }
 
   // --- POS CEPAT (SCALABLE SEARCH + DROPDOWN) ---
@@ -2430,7 +2571,8 @@
     } else if (key === 'labarugi') {
       const salesTxs = pTxs.filter(t => t.type === 'Penjualan');
       const salesRev = salesTxs.reduce((s,t)=>s+t.total, 0);
-      const otherIn = pTxs.filter(t => t.type === 'Uang Masuk').reduce((s,t)=>s+t.total, 0);
+      const otherIn = pTxs.filter(t => t.type === 'Uang Masuk' || t.type === 'Pemasukan Lain').reduce((s,t)=>s+t.total, 0);
+      const retSales = pTxs.filter(t => t.type === 'Retur Penjualan').reduce((s,t)=>s+t.total, 0);
       let hpp = 0;
       salesTxs.forEach(t => (t.items||[]).forEach(it => {
         const prod = db.items.find(x => x.id === it.id || x.name === it.name);
@@ -2439,7 +2581,7 @@
       const buyCost = pTxs.filter(t => t.type === 'Pembelian').reduce((s,t)=>s+t.total, 0);
       const opExp = pTxs.filter(t => t.type === 'Pengeluaran').reduce((s,t)=>s+t.total, 0);
       const grossProfit = salesRev - hpp;
-      const netProfit = grossProfit + otherIn - opExp;
+      const netProfit = grossProfit + otherIn - opExp - retSales;
       const margin = salesRev > 0 ? Math.round((netProfit / salesRev) * 100) : 0;
       lastReportExportRows = [['Komponen','Nominal'], ['Penjualan', salesRev], ['Uang Masuk', otherIn], ['HPP', -hpp], ['Laba Kotor', grossProfit], ['Pengeluaran', -opExp], ['Laba Bersih', netProfit]];
       body.innerHTML = `
@@ -2583,8 +2725,8 @@
           </div>`).join('') : repEmptyHTML(key==='inv_lowstock'?'Tidak ada stok yang menipis (≤ 5)':'Belum ada item inventaris')}</div>`;
 
     } else if (key === 'pemasukanpengeluaran' || key === 'kat_pemasukan' || key === 'kat_pengeluaran') {
-      const inList = pTxs.filter(t => t.type==='Penjualan'||t.type==='Uang Masuk');
-      const outList = pTxs.filter(t => t.type==='Pembelian'||t.type==='Pengeluaran');
+      const inList = pTxs.filter(t => ['Penjualan','Uang Masuk','Pemasukan Lain','Retur Pembelian'].includes(t.type));
+      const outList = pTxs.filter(t => ['Pembelian','Pengeluaran','Retur Penjualan'].includes(t.type));
       const showList = key === 'kat_pemasukan' ? inList : key === 'kat_pengeluaran' ? outList : pTxs;
       const inSum = inList.reduce((s,t)=>s+t.total,0);
       const outSum = outList.reduce((s,t)=>s+t.total,0);
@@ -2690,8 +2832,25 @@
     document.getElementById('receiptPreview').innerHTML = html;
     document.getElementById('printArea').innerHTML = html;
     document.documentElement.style.setProperty('--print-width', db.settings.paper || '58mm');
+    const convBtn = document.getElementById('btnConvertQuote');
+    if (convBtn) convBtn.style.display = (tx.type === 'Penawaran') ? 'flex' : 'none';
     openModal('receiptModal');
   }
+
+  function convertQuoteToSale() {
+    if (!activeReceipt || activeReceipt.type !== 'Penawaran') return;
+    if (!confirm('Konversi Penawaran ini menjadi Penjualan resmi & masukkan ke Saldo Kas?')) return;
+    activeReceipt.type = 'Penjualan';
+    activeReceipt.date = new Date().toISOString();
+    activeReceipt.paid = activeReceipt.total;
+    const acc = db.accounts.find(a => a.id === activeReceipt.accountId) || db.accounts[0];
+    if (acc) acc.balance = Number(acc.balance||0) + Number(activeReceipt.total||0);
+    saveDB();
+    closeModal('receiptModal');
+    renderAll();
+    showToast('Penawaran berhasil dikonversi jadi Penjualan!');
+  }
+
   function shareWA() {
     if (!activeReceipt) return;
     const tx = activeReceipt;
@@ -2763,7 +2922,7 @@
   };
 
   // Patch subpage openers to push history
-  ['openQuickEntry', 'openFastPOS', 'openConfirmSalePage', 'openReportsPage', 'openReportGroup', 'openReportDetail', 'openAccountsPage', 'openUpgradePage'].forEach(fnName => {
+  ['openQuickEntry', 'openFastPOS', 'openConfirmSalePage', 'openReportsPage', 'openReportGroup', 'openReportDetail', 'openAccountsPage', 'openGoogleSheetsPage', 'openUpgradePage'].forEach(fnName => {
     const orig = window[fnName];
     if (typeof orig === 'function') {
       window[fnName] = function(...args) {
@@ -2821,7 +2980,170 @@
     setTimeout(() => { window.close(); }, 150);
   }
 
+
+  // --- LOGIN SCREEN (USERNAME + PIN + GOOGLE) (v2.7) ---
+  function showLoginScreen() {
+    const sel = document.getElementById('lsStaffSelect');
+    if (sel && db && db.staffs) {
+      sel.innerHTML = db.staffs.map(s => `<option value="${s.id}" ${s.id===db.activeStaffId?'selected':''}>${esc(s.name)} (${esc(s.role)})</option>`).join('');
+    }
+    const pinEl = document.getElementById('lsPinInput');
+    if (pinEl) pinEl.value = '';
+    document.getElementById('loginScreen').classList.add('open');
+  }
+
+  function doAppLogin() {
+    const id = document.getElementById('lsStaffSelect').value;
+    const pin = (document.getElementById('lsPinInput').value || '').trim();
+    const remember = document.getElementById('lsRemember').checked;
+    const st = (db.staffs || []).find(s => s.id === id);
+    if (!st) return;
+    if (st.pin !== pin) return showToast('PIN salah! (Default Owner: 0000)');
+    db.activeStaffId = st.id;
+    saveDB();
+    if (remember) localStorage.setItem('velopos_logged_in', '1');
+    else sessionStorage.setItem('velopos_logged_in', '1');
+    document.getElementById('loginScreen').classList.remove('open');
+    renderAll();
+    showToast('Selamat datang, ' + st.name);
+  }
+
+  function loginWithGoogleHybrid() {
+    const email = prompt('Masukkan email Google Anda untuk menautkan akun & Google Sheets:', db.settings.googleEmail || '');
+    if (email === null) return;
+    const clean = email.trim();
+    if (!clean || !clean.includes('@')) return showToast('Masukkan alamat email Google yang valid');
+    db.settings.googleEmail = clean;
+    saveDB();
+    localStorage.setItem('velopos_logged_in', '1');
+    document.getElementById('loginScreen').classList.remove('open');
+    renderAll();
+    showToast('Masuk sebagai ' + clean);
+  }
+
+  function logoutApp() {
+    localStorage.removeItem('velopos_logged_in');
+    sessionStorage.removeItem('velopos_logged_in');
+    showLoginScreen();
+  }
+
+  // --- GOOGLE SHEETS INTEGRATION (OPSI A HYBRID) (v2.7) ---
+  function openGoogleSheetsPage() {
+    document.getElementById('gsSheetUrl').value = db.settings.lastSheetUrl || '';
+    document.getElementById('spGoogleSheets').classList.add('open');
+  }
+
+  function downloadItemsTemplateCSV() {
+    const rows = [
+      ['Nama', 'Kategori', 'Jenis', 'Harga Jual', 'Harga Modal', 'Stok', 'Satuan'],
+      ['Kopi Susu Gula Aren', 'Minuman', 'Produk', '22000', '8000', '50', 'CUP'],
+      ['Nasi Goreng Spesial', 'Makanan', 'Produk', '25000', '12000', '30', 'PORSI'],
+      ['Potong Rambut Pria', 'Jasa', 'Jasa', '35000', '0', '0', 'JASA']
+    ];
+    const csv = '\uFEFF' + rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+    dl(csv, 'Template_Barang_VeloPOS.csv', 'text/csv;charset=utf-8;');
+    showToast('Template CSV diunduh! Buka di Google Sheets');
+  }
+
+  function exportItemsCSV() {
+    if (!db.items.length) return showToast('Belum ada data barang');
+    const rows = [
+      ['Nama', 'Kategori', 'Jenis', 'Harga Jual', 'Harga Modal', 'Stok', 'Satuan'],
+      ...db.items.map(i => [i.name, i.category, i.type, i.price, i.cost||0, i.stock||0, i.unit||'PCS'])
+    ];
+    const csv = '\uFEFF' + rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    dl(csv, `VeloPOS_Barang_${new Date().toISOString().slice(0,10)}.csv`, 'text/csv;charset=utf-8;');
+    showToast('Data barang diunduh (siap buka di Sheets)');
+  }
+
+  function parseCSVText(text) {
+    const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim());
+    return lines.map(line => {
+      const res = []; let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+        else if ((ch === ',' || ch === ';') && !inQ) { res.push(cur.trim()); cur = ''; }
+        else cur += ch;
+      }
+      res.push(cur.trim());
+      return res;
+    });
+  }
+
+  function processImportedItemsCSV(csvText) {
+    const rows = parseCSVText(csvText);
+    if (rows.length < 2) return showToast('File CSV kosong atau tidak sesuai template');
+    let added = 0, updated = 0;
+    for (let r = 1; r < rows.length; r++) {
+      const cols = rows[r];
+      const name = (cols[0] || '').trim();
+      if (!name) continue;
+      const category = (cols[1] || 'Umum').trim() || 'Umum';
+      const type = ((cols[2] || 'Produk').trim().toLowerCase() === 'jasa') ? 'Jasa' : 'Produk';
+      const price = parseInt(String(cols[3] || '0').replace(/[^0-9]/g, ''), 10) || 0;
+      const cost = parseInt(String(cols[4] || '0').replace(/[^0-9]/g, ''), 10) || 0;
+      const stock = parseInt(String(cols[5] || '0').replace(/[^0-9]/g, ''), 10) || 0;
+      const unit = (cols[6] || 'PCS').trim() || 'PCS';
+
+      if (!db.categories.includes(category)) db.categories.push(category);
+      const existing = db.items.find(x => x.name.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        Object.assign(existing, { category, type, price, cost, stock, unit });
+        updated++;
+      } else {
+        db.items.unshift({ id: 'i_' + Date.now() + '_' + r, name, category, type, price, cost, stock, unit });
+        added++;
+      }
+    }
+    saveDB();
+    renderAll();
+    closeSubpage('spGoogleSheets');
+    showToast(`Import selesai: ${added} barang baru, ${updated} diperbarui`);
+  }
+
+  function importItemsFromCSVFile(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => processImportedItemsCSV(ev.target.result);
+    reader.readAsText(f);
+    e.target.value = '';
+  }
+
+  async function importItemsFromGoogleSheetUrl() {
+    const rawUrl = (document.getElementById('gsSheetUrl').value || '').trim();
+    if (!rawUrl.includes('docs.google.com/spreadsheets')) {
+      return showToast('Tempel link Google Sheets yang valid');
+    }
+    const match = rawUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (!match) return showToast('ID Google Sheets tidak ditemukan di link');
+    const sheetId = match[1];
+    const gidMatch = rawUrl.match(/gid=([0-9]+)/);
+    const gidParam = gidMatch ? `&gid=${gidMatch[1]}` : '';
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gidParam}`;
+
+    const btn = document.getElementById('btnFetchGS');
+    btn.disabled = true; btn.textContent = 'Menarik data...';
+    try {
+      const res = await fetch(csvUrl);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      if (text.trim().startsWith('<!DOCTYPE') || text.includes('<html')) {
+        throw new Error('Sheet belum di-share publik');
+      }
+      db.settings.lastSheetUrl = rawUrl;
+      saveDB();
+      processImportedItemsCSV(text);
+    } catch (err) {
+      showToast('Gagal tarik! Pastikan Sheet sudah di-Share "Siapa saja yg punya link"');
+    } finally {
+      btn.disabled = false; btn.textContent = '⬇ Tarik Data Barang dari Link Sheets';
+    }
+  }
+
   init();
+  if (!localStorage.getItem('velopos_logged_in') && !sessionStorage.getItem('velopos_logged_in')) showLoginScreen();
 </script>
 </body>
 </html>

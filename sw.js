@@ -1,4 +1,4 @@
-const CACHE_NAME = 'velo-pos-v2.5-allinone';
+const CACHE_NAME = 'velo-pos-v2.7-allinone';
 const ASSETS = ['./', './index.html', './manifest.json', './velo-icon-192.png', './velo-icon-512.png'];
 
 self.addEventListener('install', (e) => {
