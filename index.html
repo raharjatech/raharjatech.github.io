@@ -848,7 +848,7 @@
 
     <div style="padding-top:10px;border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;">
       <button id="sbUpgradeBtn" class="btn btn-primary btn-block btn-sm" style="margin-bottom:8px;" onclick="openUpgradePage()">👑 Upgrade Paket</button>
-      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.5 • Raharja Tech</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.6 • Raharja Tech</div>
     </div>
   </aside>
 
@@ -2020,7 +2020,7 @@
       <div class="dash-tile in-tile" onclick="switchTab('transaksi')">
         <div><div class="dt-val num">${rp(inSum)}</div><div class="dt-lbl">Terima ↓</div></div><span>›</span>
       </div>
-      <div class="dash-tile out-tile" onclick="if(requireTier('bisnis','Catat Pembayaran & Keluar')) switchTab('transaksi')">
+      <div class="dash-tile out-tile" onclick="if(requireTier('bisnis','Pembelian / Uang Keluar ke Pihak')) openQuickEntry('Pembelian')">
         <div><div class="dt-val num">${rp(buySum + expSum)}</div><div class="dt-lbl">Bayar ↑ ${!hasTier('bisnis')?'🔒':''}</div></div><span>›</span>
       </div>
       <div class="dash-tile" onclick="switchTab('transaksi')">
