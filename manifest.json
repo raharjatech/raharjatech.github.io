@@ -10,13 +10,13 @@
   "theme_color": "#0B1F3A",
   "icons": [
     {
-      "src": "velo-icon-192.png",
+      "src": "dira-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "velo-icon-512.png",
+      "src": "dira-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
