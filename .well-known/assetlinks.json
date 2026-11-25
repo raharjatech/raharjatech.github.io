@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "com.raharjatech.dirapos",
-        "sha256_cert_fingerprints": ["BF:12:21:9D:F5:94:DD:A3:6B:33:42:5F:18:66:04:68:96:30:12:55:C5:F8:6E:93:5D:12:DD:35:53:F3:10:DE"]
+        "sha256_cert_fingerprints": ["0C:FE:A0:B6:66:CC:19:41:50:7B:6E:2B:38:CF:7E:26:5B:5E:64:DC:F7:86:C2:13:17:76:C6:67:CC:66:A4:CF"]
       }
     }]
