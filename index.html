@@ -846,7 +846,7 @@
 
     <div style="padding-top:10px;border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;">
       <button class="btn btn-primary btn-block btn-sm" style="margin-bottom:8px;" onclick="openUpgradePage()">👑 Upgrade Paket</button>
-      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Velo POS v2.8 • Raharja Tech</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Velo POS v2.9 • Raharja Tech</div>
     </div>
   </aside>
 
@@ -3564,6 +3564,47 @@
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
       openCmdPalette();
+      return;
+    }
+
+    // Keyboard & Numpad support for Entri Cepat (v2.9)
+    const qeEl = document.getElementById('spQuickEntry');
+    if (!qeEl || !qeEl.classList.contains('open')) return;
+    // Ignore if any modal is open on top of Entri Cepat
+    if (document.querySelector('.modal-overlay.open')) return;
+    // Ignore if user is typing in Note input or Select dropdown
+    const tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    const k = e.key;
+    if (/^[0-9]$/.test(k)) {
+      e.preventDefault();
+      calcKey(k);
+    } else if (k === '+' || k === '-') {
+      e.preventDefault();
+      calcKey(k);
+    } else if (k === '*') {
+      e.preventDefault();
+      calcKey('×');
+    } else if (k === '/') {
+      e.preventDefault();
+      calcKey('÷');
+    } else if (k === 'Backspace') {
+      e.preventDefault();
+      calcKey('DEL');
+    } else if (k === 'Delete' || k === 'c' || k === 'C') {
+      e.preventDefault();
+      calcKey('AC');
+    } else if (k === '=') {
+      e.preventDefault();
+      calcKey('=');
+    } else if (k === 'Enter') {
+      e.preventDefault();
+      if (/[+\-×÷]/.test(calcStr)) {
+        calcKey('=');
+      } else {
+        submitQuickEntry();
+      }
     }
   });
 
