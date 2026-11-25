@@ -847,8 +847,8 @@
     </div>
 
     <div style="padding-top:10px;border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;">
-      <button class="btn btn-primary btn-block btn-sm" style="margin-bottom:8px;" onclick="openUpgradePage()">👑 Upgrade Paket</button>
-      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.3 • Raharja Tech</div>
+      <button id="sbUpgradeBtn" class="btn btn-primary btn-block btn-sm" style="margin-bottom:8px;" onclick="openUpgradePage()">👑 Upgrade Paket</button>
+      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.4 • Raharja Tech</div>
     </div>
   </aside>
 
@@ -1011,7 +1011,7 @@
 
     <!-- TAB 5: LAINNYA -->
     <section id="view-lainnya" class="view">
-      <div class="card" style="background:linear-gradient(135deg,var(--navy-900),var(--navy-800));color:#fff;cursor:pointer;" onclick="openUpgradePage()">
+      <div id="moreUpgradeCard" class="card" style="background:linear-gradient(135deg,var(--navy-900),var(--navy-800));color:#fff;cursor:pointer;" onclick="openUpgradePage()">
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div>
             <div style="font-size:12px;color:#7DD3FC;font-weight:700;" id="moreTierBadge">PAKET AKTIF: STARTER</div>
@@ -1920,6 +1920,11 @@
     const tName = curTier === 'demo' ? `DEMO (${remDemo}/${DEMO_TX_LIMIT})` : curTier.toUpperCase();
     document.getElementById('sbTierLabel').textContent = curTier === 'demo' ? `Mode Demo • Sisa ${remDemo} tx` : 'Paket ' + tName;
     document.getElementById('moreTierBadge').textContent = curTier === 'demo' ? `MODE DEMO (SISA ${remDemo}/${DEMO_TX_LIMIT} TRANSAKSI)` : 'PAKET AKTIF: ' + tName;
+    const isPro = hasTier('profesional');
+    const sbUpg = document.getElementById('sbUpgradeBtn');
+    if (sbUpg) sbUpg.style.display = isPro ? 'none' : '';
+    const moreUpg = document.getElementById('moreUpgradeCard');
+    if (moreUpg) moreUpg.style.display = isPro ? 'none' : '';
     const pill = document.getElementById('topTierPill');
     pill.textContent = tName + ' ▾';
     pill.className = 'tier-pill tier-' + curTier;
