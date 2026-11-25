@@ -848,7 +848,7 @@
 
     <div style="padding-top:10px;border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;">
       <button id="sbUpgradeBtn" class="btn btn-primary btn-block btn-sm" style="margin-bottom:8px;" onclick="openUpgradePage()">👑 Upgrade Paket</button>
-      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.4 • Raharja Tech</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.5 • Raharja Tech</div>
     </div>
   </aside>
 
@@ -1054,6 +1054,10 @@
       <div class="card menu-list">
         <div class="ml-row" onclick="openGoogleSheetsPage()">
           <div class="ml-left"><div class="ml-ico" style="background:var(--green-50);color:var(--green-600);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div><div><div class="ml-title">Integrasi Google Sheets <span id="badgeLockGS"></span></div><div class="ml-sub">Import massal barang &amp; download ke Google Sheets</div></div></div>
+          <span>›</span>
+        </div>
+        <div class="ml-row" onclick="openLiveSyncModal()">
+          <div class="ml-left"><div class="ml-ico" style="background:var(--blue-50);color:var(--blue-600);">⚡</div><div><div class="ml-title">Live Sync ke Google Sheets <span id="badgeLockLiveSync"></span></div><div class="ml-sub" id="liveSyncStatusSub">Pantau transaksi real-time dari HP/Laptop Owner</div></div></div>
           <span>›</span>
         </div>
         <div class="ml-row" onclick="logoutApp()">
@@ -1396,6 +1400,53 @@
       <div style="display:flex;gap:8px;">
         <input type="text" id="licenseInput" class="input" placeholder="Kode: DIRA-BS-XXXX-YYYY" style="text-transform:uppercase;font-weight:700;" />
         <button class="btn btn-navy" onclick="activateLicense()">Aktifkan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: LIVE SYNC GOOGLE SHEETS (PAKET PROFESIONAL) -->
+<div class="modal-overlay" id="liveSyncModal">
+  <div class="modal-sheet" style="max-width:520px;">
+    <div class="modal-header">
+      <h3 style="margin:0;font-size:16px;font-weight:800;">Live Sync ke Google Sheets</h3>
+      <button class="sp-back" onclick="closeModal('liveSyncModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="card" style="background:var(--blue-50);border-color:var(--blue-100);padding:12px 14px;margin-bottom:12px;">
+        <div style="font-size:12.5px;font-weight:700;color:var(--navy-900);">Cara Kerja Live Sync (Gratis Tanpa Biaya Server)</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:4px;line-height:1.5;">
+          Setiap transaksi baru otomatis terkirim ke <b>Google Sheets milik Owner</b>. Owner bisa pantau omzet dari HP atau laptop mana saja.
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
+        <div>
+          <div style="font-size:13.5px;font-weight:700;">Aktifkan Auto-Send Transaksi</div>
+          <div style="font-size:11.5px;color:var(--text-2);">Kirim otomatis saat simpan transaksi (jika ada internet)</div>
+        </div>
+        <button type="button" class="switch-pill" id="liveSyncSwitchPill" onclick="toggleLiveSyncSwitch()"></button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">URL Web App Google Apps Script</label>
+        <input type="url" id="lsWebhookUrl" class="input" placeholder="https://script.google.com/macros/s/.../exec" />
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="saveLiveSyncConfig()">Simpan Pengaturan</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="testLiveSyncWebhook()">Tes Kirim Data</button>
+      </div>
+
+      <div style="border-top:1px solid var(--border);padding-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div style="font-size:12.5px;font-weight:700;">Kode Apps Script (Salin ke Google Sheets Klien)</div>
+          <button type="button" class="btn btn-outline btn-sm" style="padding:4px 9px;font-size:11px;" onclick="copyAppsScriptCode()">📋 Salin Script</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-2);margin-bottom:6px;line-height:1.45;">
+          Buka Google Sheets → <b>Extensions → Apps Script</b> → tempel kode di bawah → <b>Deploy → New deployment → Web app</b> (Execute as: <i>Me</i>, Who has access: <i>Anyone</i>) → salin URL Web App ke kolom di atas.
+        </div>
+        <textarea id="appsScriptCodeBox" class="input" rows="7" readonly style="font-family:monospace;font-size:11px;background:var(--surface-2);"></textarea>
       </div>
     </div>
   </div>
@@ -1942,6 +1993,13 @@
     if (bStaf) bStaf.innerHTML = hasTier('profesional') ? '' : '<span class="lock-badge">🔒 PRO</span>';
     const bGS = document.getElementById('badgeLockGS');
     if (bGS) bGS.innerHTML = hasTier('bisnis') ? '' : '<span class="lock-badge">🔒 BISNIS</span>';
+    const bLS = document.getElementById('badgeLockLiveSync');
+    if (bLS) bLS.innerHTML = hasTier('profesional') ? '' : '<span class="lock-badge">🔒 PRO</span>';
+    const lsSub = document.getElementById('liveSyncStatusSub');
+    if (lsSub) {
+      const enabled = !!(db.settings && db.settings.liveSyncEnabled && db.settings.liveSyncWebhook);
+      lsSub.textContent = enabled ? 'Aktif: Otomatis kirim transaksi ke Sheets' : 'Pantau transaksi real-time dari HP/Laptop Owner';
+    }
     renderBeranda();
     renderTxList();
     renderParties();
@@ -2175,6 +2233,7 @@
       items: [{ name: noteVal ? `${qeType}: ${noteVal}` : `${qeType} (Entri Cepat)`, qty: 1, price: val }]
     };
     db.txs.unshift(tx);
+    pushLiveSyncTx(tx);
     // Penawaran does NOT change Cash/Bank balance until converted to Penjualan
     if (!isQuote) {
       const acc = db.accounts.find(a => a.id === accId);
@@ -2355,6 +2414,7 @@
       cart.forEach(c => { const it = db.items.find(x => x.id === c.id); if (it && it.type==='Produk') it.stock = Math.max(0, Number(it.stock||0) - c.qty); });
     }
     db.txs.unshift(tx);
+    pushLiveSyncTx(tx);
     const acc = db.accounts.find(a => a.id === accId);
     if (acc) acc.balance = Number(acc.balance||0) + grand;
     cart = [];
@@ -2417,6 +2477,7 @@
       cart.forEach(c => { const it = db.items.find(x => x.id === c.id); if (it && it.type==='Produk') it.stock = Math.max(0, Number(it.stock||0) - c.qty); });
     }
     db.txs.unshift(tx);
+    pushLiveSyncTx(tx);
     const acc = db.accounts.find(a => a.id === accId);
     if (acc) acc.balance = Number(acc.balance||0) + tot;
     cart = []; incDemoUsed(); saveDB();
@@ -3696,6 +3757,117 @@
     }
   }
 
+
+  // --- LIVE SYNC GOOGLE SHEETS (PAKET PROFESIONAL v3.5) ---
+  const APPS_SCRIPT_TEMPLATE = `function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Transaksi_DiraPOS")
+      || SpreadsheetApp.getActiveSpreadsheet().insertSheet("Transaksi_DiraPOS");
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["Waktu", "No Struk", "Tipe", "Pihak", "Kasir/Staf", "Akun", "Catatan", "Total"]);
+    }
+    var data = JSON.parse(e.postData.contents);
+    sheet.appendRow([
+      data.date || new Date().toISOString(),
+      data.id || "",
+      data.type || "",
+      data.party || "",
+      data.staff || "Owner / Admin",
+      data.accountName || "Cash",
+      data.note || "",
+      Number(data.total || 0)
+    ]);
+    return ContentService.createTextOutput(JSON.stringify({ ok: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+
+  let _liveSyncDraftEnabled = false;
+
+  function openLiveSyncModal() {
+    if (!requireTier('profesional', 'Live Sync ke Google Sheets')) return;
+    _liveSyncDraftEnabled = !!(db.settings && db.settings.liveSyncEnabled);
+    document.getElementById('liveSyncSwitchPill').classList.toggle('on', _liveSyncDraftEnabled);
+    document.getElementById('lsWebhookUrl').value = (db.settings && db.settings.liveSyncWebhook) || '';
+    document.getElementById('appsScriptCodeBox').value = APPS_SCRIPT_TEMPLATE;
+    openModal('liveSyncModal');
+  }
+
+  function toggleLiveSyncSwitch() {
+    _liveSyncDraftEnabled = !_liveSyncDraftEnabled;
+    document.getElementById('liveSyncSwitchPill').classList.toggle('on', _liveSyncDraftEnabled);
+  }
+
+  function saveLiveSyncConfig() {
+    const url = (document.getElementById('lsWebhookUrl').value || '').trim();
+    if (_liveSyncDraftEnabled && !url.startsWith('https://script.google.com/')) {
+      return showToast('Masukkan URL Web App Google Apps Script yang valid');
+    }
+    db.settings.liveSyncWebhook = url;
+    db.settings.liveSyncEnabled = _liveSyncDraftEnabled && !!url;
+    saveDB();
+    renderAll();
+    closeModal('liveSyncModal');
+    showToast(db.settings.liveSyncEnabled ? 'Live Sync Google Sheets aktif!' : 'Live Sync disimpan');
+  }
+
+  function copyAppsScriptCode() {
+    navigator.clipboard.writeText(APPS_SCRIPT_TEMPLATE);
+    showToast('Kode Apps Script disalin!');
+  }
+
+  function pushLiveSyncTx(tx) {
+    if (!hasTier('profesional')) return;
+    if (!db.settings || !db.settings.liveSyncEnabled || !db.settings.liveSyncWebhook) return;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+    const acc = (db.accounts || []).find(a => a.id === tx.accountId);
+    const payload = {
+      id: tx.id,
+      type: tx.type,
+      date: tx.date,
+      party: tx.party,
+      staff: tx.staff || getActiveStaffName(),
+      accountName: (acc && acc.name) || 'Cash',
+      note: tx.note || '',
+      total: Number(tx.total || 0)
+    };
+    fetch(db.settings.liveSyncWebhook, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+  }
+
+  function testLiveSyncWebhook() {
+    const url = (document.getElementById('lsWebhookUrl').value || '').trim();
+    if (!url.startsWith('https://script.google.com/')) {
+      return showToast('Tempel URL Web App Apps Script dulu');
+    }
+    const sample = {
+      id: 'TEST-' + String(Date.now()).slice(-4),
+      type: 'Penjualan',
+      date: new Date().toISOString(),
+      party: 'Tes Live Sync Owner',
+      staff: getActiveStaffName(),
+      accountName: 'Cash',
+      note: 'Uji koneksi Dira POS',
+      total: 50000
+    };
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(sample)
+    }).then(() => {
+      showToast('Data tes dikirim! Cek tab Transaksi_DiraPOS di Sheets');
+    }).catch(() => {
+      showToast('Gagal mengirim tes ke Sheets');
+    });
+  }
 
   // --- DARK / LIGHT MODE (OPTIONAL TOGGLE) (v2.8) ---
   function applyTheme(theme) {
