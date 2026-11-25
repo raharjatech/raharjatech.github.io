@@ -1,6 +1,6 @@
 {
-  "name": "Velo POS",
-  "short_name": "Velo POS",
+  "name": "Dira POS",
+  "short_name": "Dira POS",
   "description": "Aplikasi Kasir & Pembukuan Modern All-in-One untuk UMKM by Raharja Tech",
   "start_url": "./index.html",
   "scope": "./",
