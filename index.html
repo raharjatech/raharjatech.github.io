@@ -848,7 +848,7 @@
 
     <div style="padding-top:10px;border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;">
       <button id="sbUpgradeBtn" class="btn btn-primary btn-block btn-sm" style="margin-bottom:8px;" onclick="openUpgradePage()">👑 Upgrade Paket</button>
-      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.6 • Raharja Tech</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.7 • Raharja Tech</div>
     </div>
   </aside>
 
@@ -967,24 +967,33 @@
       <div class="card menu-list" id="txListContainer"></div>
     </section>
 
-    <!-- TAB 3: PIHAK -->
+    <!-- TAB 3: PIHAK (v3.7: PELANGGAN, PEMASOK, BAYAR + DETAIL PIHAK & TRANSAKSI) -->
     <section id="view-pihak" class="view">
-      <div class="search-row">
+      <div class="search-row" style="align-items:center;">
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="partySearch" class="input" placeholder="Cari pelanggan atau pemasok..." oninput="renderParties()" />
+          <input type="text" id="partySearch" class="input" placeholder="Cari pihak..." oninput="renderParties()" />
         </div>
-        <button class="btn btn-outline btn-sm" onclick="openGoogleSheetsPage('parties')">Impor</button>
-        <button class="btn btn-primary btn-sm" onclick="openPartyModal()">+ Pihak</button>
+        <button class="btn btn-outline btn-sm" onclick="openGoogleSheetsPage('parties')">Impor Pihak</button>
+        <button class="btn btn-green btn-sm" onclick="openPartyModal()">+ Tambah Pihak</button>
       </div>
-      <div class="filter-row">
-        <select id="partyRoleFilter" class="select-pill" onchange="renderParties()">
-          <option value="all">Semua Pihak</option>
-          <option value="Pelanggan">Pelanggan</option>
-          <option value="Pemasok">Pemasok (Bisnis)</option>
-        </select>
+      <div class="filter-row" id="partyChipBar">
+        <button type="button" class="select-pill" data-pfilter="Pelanggan" onclick="setPartyChip('Pelanggan')">Pelanggan</button>
+        <button type="button" class="select-pill" data-pfilter="Pemasok" onclick="setPartyChip('Pemasok')">Pemasok</button>
+        <button type="button" class="select-pill" data-pfilter="Bayar" onclick="setPartyChip('Bayar')">Bayar</button>
+        <button type="button" class="select-pill" data-pfilter="all" onclick="setPartyChip('all')">Semua</button>
       </div>
-      <div class="card menu-list" id="partyListContainer"></div>
+      <select id="partyRoleFilter" style="display:none;" onchange="renderParties()">
+        <option value="all">Semua Pihak</option>
+        <option value="Pelanggan">Pelanggan</option>
+        <option value="Pemasok">Pemasok</option>
+        <option value="Bayar">Bayar</option>
+      </select>
+
+      <div class="acc-layout" id="pihakSplitLayout">
+        <div id="partyListContainer"></div>
+        <div id="partyDetailContainer"></div>
+      </div>
     </section>
 
     <!-- TAB 4: INVENTARIS -->
@@ -1452,6 +1461,54 @@
   </div>
 </div>
 
+<!-- MODAL: TAMBAH TRANSAKSI UNTUK PIHAK (v3.7) -->
+<div class="modal-overlay" id="partyTxModal">
+  <div class="modal-sheet" style="max-width:460px;">
+    <div class="modal-header">
+      <h3 style="margin:0;font-size:16px;font-weight:800;" id="ptxTitle">Tambah Transaksi</h3>
+      <button class="sp-back" onclick="closeModal('partyTxModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ptxPartyId" />
+      <div class="form-group">
+        <label class="form-label">Pihak</label>
+        <input type="text" id="ptxPartyName" class="input" readonly style="background:var(--surface-2);font-weight:700;" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tipe Transaksi</label>
+          <select id="ptxType" class="input">
+            <option value="Uang Keluar">Uang Keluar (Bayar Pihak)</option>
+            <option value="Pembelian">Pembelian</option>
+            <option value="Faktur Penjualan">Faktur Penjualan</option>
+            <option value="Uang Masuk">Uang Masuk</option>
+            <option value="Penawaran">Penawaran</option>
+            <option value="Retur Penjualan">Retur Penjualan</option>
+            <option value="Retur Pembelian">Retur Pembelian</option>
+            <option value="Sesuaikan Saldo">Sesuaikan Saldo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Akun Kas / Bank</label>
+          <select id="ptxAccount" class="input"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nominal (Rp)</label>
+        <input type="number" id="ptxAmount" class="input num" placeholder="Contoh: 150000" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catatan (Opsional)</label>
+        <input type="text" id="ptxNote" class="input" placeholder="Keterangan transaksi..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('partyTxModal')">Batal</button>
+      <button class="btn btn-green" style="flex:1;" onclick="savePartyTx()">Simpan Transaksi</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: KELOLA KATEGORI -->
 <div class="modal-overlay" id="catModal">
   <div class="modal-sheet">
@@ -1523,35 +1580,71 @@
   </div>
 </div>
 
-<!-- MODAL: ADD PARTY -->
+<!-- MODAL: ADD / EDIT PARTY (v3.7: PELANGGAN/PEMASOK + INFO KREDIT TERIMA/BAYAR) -->
 <div class="modal-overlay" id="partyModal">
-  <div class="modal-sheet">
+  <div class="modal-sheet" style="max-width:540px;">
     <div class="modal-header">
-      <h3 style="margin:0;font-size:16px;font-weight:800;">Tambah Pihak Baru</h3>
+      <h3 style="margin:0;font-size:16px;font-weight:800;" id="partyModalTitle">Tambah Pihak Baru</h3>
       <button class="sp-back" onclick="closeModal('partyModal')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Nama Pelanggan / Pemasok</label>
-        <input type="text" id="partyName" class="input" placeholder="Contoh: Budi / Toko Jaya" />
-      </div>
+      <input type="hidden" id="editPartyId" />
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">No. WhatsApp / HP</label>
-          <input type="tel" id="partyPhone" class="input" placeholder="08xxxxxxxxxx" />
+          <label class="form-label">Nama Lengkap*</label>
+          <input type="text" id="partyName" class="input" placeholder="Contoh: Percetakan / Budi" />
         </div>
         <div class="form-group">
-          <label class="form-label">Peran</label>
-          <select id="partyRole" class="input">
-            <option value="Pelanggan">Pelanggan</option>
-            <option value="Pemasok">Pemasok (Bisnis)</option>
-          </select>
+          <label class="form-label">Nomor Telepon</label>
+          <input type="tel" id="partyPhone" class="input" placeholder="08xxxxxxxxxx" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Jenis Pihak</label>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="select-pill" id="pmRolePelanggan" onclick="setPartyModalRole('Pelanggan')">Pelanggan</button>
+          <button type="button" class="select-pill" id="pmRolePemasok" onclick="setPartyModalRole('Pemasok')">Pemasok</button>
+        </div>
+        <select id="partyRole" style="display:none;">
+          <option value="Pelanggan">Pelanggan</option>
+          <option value="Pemasok">Pemasok</option>
+        </select>
+      </div>
+
+      <div class="filter-row" style="border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:12px;">
+        <button type="button" class="select-pill" id="pmTabCredit" onclick="switchPartyModalTab('credit')">Info Kredit</button>
+        <button type="button" class="select-pill" id="pmTabExtra" onclick="switchPartyModalTab('extra')">Info Tambahan</button>
+      </div>
+
+      <div id="pmPaneCredit">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Saldo Awal</label>
+            <input type="number" id="partyOpeningBal" class="input num" placeholder="0" value="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Per Tanggal</label>
+            <input type="date" id="partyBalDate" class="input" />
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <button type="button" class="select-pill" id="pmBalTerima" onclick="setPartyBalType('terima')">Terima</button>
+          <button type="button" class="select-pill" id="pmBalBayar" onclick="setPartyBalType('bayar')">Bayar</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-3);">Pilih <b>Bayar</b> jika pihak ini memiliki tagihan/hutang yang perlu dibayarkan (uang keluar ke pihak).</div>
+      </div>
+
+      <div id="pmPaneExtra" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Alamat / Catatan</label>
+          <input type="text" id="partyNote" class="input" placeholder="Alamat lengkap atau catatan pihak..." />
         </div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('partyModal')">Batal</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveParty()">Simpan</button>
+      <button class="btn btn-green" style="flex:1;" onclick="saveParty()">Simpan Pihak</button>
     </div>
   </div>
 </div>
@@ -2020,7 +2113,7 @@
       <div class="dash-tile in-tile" onclick="switchTab('transaksi')">
         <div><div class="dt-val num">${rp(inSum)}</div><div class="dt-lbl">Terima ↓</div></div><span>›</span>
       </div>
-      <div class="dash-tile out-tile" onclick="if(requireTier('bisnis','Pembelian / Uang Keluar ke Pihak')) openQuickEntry('Pembelian')">
+      <div class="dash-tile out-tile" onclick="if(requireTier('bisnis','Bayar / Uang Keluar ke Pihak')) openPayablePartiesView()">
         <div><div class="dt-val num">${rp(buySum + expSum)}</div><div class="dt-lbl">Bayar ↑ ${!hasTier('bisnis')?'🔒':''}</div></div><span>›</span>
       </div>
       <div class="dash-tile" onclick="switchTab('transaksi')">
@@ -2515,30 +2608,308 @@
     }).join('');
   }
 
-  // --- PIHAK ---
+  // --- PIHAK & BAYAR (v3.7) ---
+  let activePartyChip = 'all';
+  let selectedPartyId = null;
+  let pmBalType = 'terima';
+
+  function openPayablePartiesView() {
+    activePartyChip = 'Bayar';
+    document.getElementById('partyRoleFilter').value = 'Bayar';
+    switchTab('pihak');
+  }
+
+  function setPartyChip(chip) {
+    if (chip === 'Pemasok' && !requireTier('bisnis', 'Data Pemasok')) return;
+    if (chip === 'Bayar' && !requireTier('bisnis', 'Bayar / Tagihan Pihak')) return;
+    activePartyChip = chip;
+    document.getElementById('partyRoleFilter').value = chip;
+    renderParties();
+  }
+
+  function syncPartyChipStyles() {
+    document.querySelectorAll('#partyChipBar [data-pfilter]').forEach(btn => {
+      const active = btn.dataset.pfilter === activePartyChip;
+      btn.style.background = active ? 'var(--blue-600)' : '';
+      btn.style.color = active ? '#fff' : '';
+      btn.style.borderColor = active ? 'var(--blue-600)' : '';
+    });
+  }
+
+  function getPartyBalance(p) {
+    const base = Number(p.openingBalance || 0);
+    const signedBase = (p.balanceType === 'bayar') ? -base : base;
+    const txDelta = (db.txs || []).filter(t => t.party === p.name && t.type !== 'Penawaran').reduce((sum, t) => {
+      const isOut = ['Pembelian', 'Pengeluaran', 'Uang Keluar', 'Retur Penjualan'].includes(t.type);
+      return sum + (isOut ? -Number(t.total || 0) : Number(t.total || 0));
+    }, 0);
+    return signedBase + txDelta;
+  }
+
   function renderParties() {
-    const q = (document.getElementById('partySearch').value||'').toLowerCase();
-    const rf = document.getElementById('partyRoleFilter').value;
-    const list = db.parties.filter(p => (rf==='all'||p.role===rf) && (p.name.toLowerCase().includes(q)||(p.phone||'').includes(q)));
-    document.getElementById('partyListContainer').innerHTML = list.length ? list.map(p => `
-      <div class="ml-row">
+    syncPartyChipStyles();
+    const q = (document.getElementById('partySearch')?.value || '').toLowerCase();
+    const rf = activePartyChip || document.getElementById('partyRoleFilter')?.value || 'all';
+    const allParties = (db.parties || []).filter(p => p.id !== 'pt_umum');
+
+    const filtered = allParties.filter(p => {
+      const bal = getPartyBalance(p);
+      if (rf === 'Pelanggan' && p.role !== 'Pelanggan') return false;
+      if (rf === 'Pemasok' && p.role !== 'Pemasok') return false;
+      if (rf === 'Bayar' && !(p.balanceType === 'bayar' || bal < 0)) return false;
+      if (q && !(p.name.toLowerCase().includes(q) || (p.phone || '').includes(q))) return false;
+      return true;
+    });
+
+    const listEl = document.getElementById('partyListContainer');
+    const detEl = document.getElementById('partyDetailContainer');
+
+    if (!allParties.length) {
+      listEl.innerHTML = `<div class="card" style="text-align:center;padding:32px 18px;">
+        <div style="font-size:16px;font-weight:800;margin-bottom:6px;">Tambahkan Pihak Pertama Anda</div>
+        <div style="font-size:12.5px;color:var(--text-2);margin-bottom:14px;">Klik tombol tambah pihak baru dan kelola transaksi &amp; pembayaran bersama mereka.</div>
+        <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-green btn-sm" onclick="openPartyModal()">+ Tambah Pihak Baru</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="openGoogleSheetsPage('parties')">Impor Pihak</button>
+        </div>
+      </div>`;
+      if (detEl) detEl.innerHTML = '';
+      return;
+    }
+
+    if (!filtered.length) {
+      listEl.innerHTML = `<div class="card" style="text-align:center;padding:28px 18px;">
+        <div style="font-size:15px;font-weight:800;margin-bottom:4px;">Data Pihak Tidak Ditemukan</div>
+        <div style="font-size:12.5px;color:var(--text-2);margin-bottom:12px;">Silakan cari nama pihak lain atau buat pihak baru.</div>
+        <button type="button" class="btn btn-green btn-sm" onclick="openPartyModal()">+ Tambah Pihak Baru</button>
+      </div>`;
+      if (detEl) detEl.innerHTML = '';
+      return;
+    }
+
+    if (!selectedPartyId || !filtered.some(p => p.id === selectedPartyId)) {
+      selectedPartyId = filtered[0].id;
+    }
+
+    listEl.innerHTML = `<div class="card menu-list">${filtered.map(p => {
+      const bal = getPartyBalance(p);
+      const isSelected = p.id === selectedPartyId;
+      const statusLbl = bal < 0 ? 'Bayar' : 'Lunas';
+      const badgeCls = bal < 0 ? 'b-out' : 'b-in';
+      return `<div class="ml-row ${isSelected ? 'acc-row-active' : ''}" onclick="selectPartyDetail('${p.id}')">
         <div class="ml-left">
           <div class="inv-avatar">${esc(p.name.slice(0,2).toUpperCase())}</div>
-          <div><div class="ml-title">${esc(p.name)}</div><div class="ml-sub">${esc(p.role)} ${p.phone?'• '+esc(p.phone):''}</div></div>
+          <div>
+            <div class="ml-title">${esc(p.name)}</div>
+            <div class="ml-sub">${esc(p.role)}${p.phone ? ' • ' + esc(p.phone) : ''}</div>
+          </div>
         </div>
-        <span class="badge b-in">Lunas</span>
-      </div>
-    `).join('') : `<div style="text-align:center;padding:24px;color:var(--text-3);">Tidak ada data pihak.</div>`;
+        <div style="text-align:right;">
+          <span class="badge ${badgeCls}">${statusLbl}</span>
+          <div class="num" style="font-size:12.5px;font-weight:800;margin-top:3px;color:${bal < 0 ? 'var(--red-600)' : 'var(--text-1)'};">${rp(Math.abs(bal))}</div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+
+    const activeP = filtered.find(p => p.id === selectedPartyId) || filtered[0];
+    const pBal = getPartyBalance(activeP);
+    const pTxs = (db.txs || []).filter(t => t.party === activeP.name);
+
+    if (detEl) {
+      detEl.innerHTML = `
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="inv-avatar" style="width:42px;height:42px;font-size:14px;">${esc(activeP.name.slice(0,2).toUpperCase())}</div>
+              <div>
+                <div style="font-size:16px;font-weight:800;">${esc(activeP.name)}</div>
+                <div style="font-size:12px;color:var(--text-2);">${esc(activeP.role)}${activeP.phone ? ' • ' + esc(activeP.phone) : ' • ---'}</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge ${pBal < 0 ? 'b-out' : 'b-in'}">${pBal < 0 ? 'Bayar' : 'Lunas'}</span>
+              <div class="num" style="font-size:16px;font-weight:800;margin-top:3px;color:${pBal < 0 ? 'var(--red-600)' : 'var(--text-1)'};">${rp(Math.abs(pBal))}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);">
+            <button type="button" class="btn btn-outline btn-sm" onclick="openPartyModal('${activeP.id}')">✎ Kelola Pihak</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openPartyTxModal('${activeP.id}','Uang Keluar')">💸 Bayar / Uang Keluar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div style="font-size:14px;font-weight:800;">Transaksi (${pTxs.length})</div>
+            <button type="button" class="btn btn-green btn-sm" onclick="openPartyTxModal('${activeP.id}','Faktur Penjualan')">+ Tambah Transaksi</button>
+          </div>
+          ${pTxs.length ? `<div class="menu-list">${pTxs.map(t => {
+            const isOut = ['Pembelian','Pengeluaran','Uang Keluar','Retur Penjualan'].includes(t.type);
+            return `<div class="ml-row" onclick="openReceiptById('${t.id}')">
+              <div>
+                <div class="ml-title">${t.type} <span style="font-weight:500;color:var(--text-2);">(${t.id})</span></div>
+                <div class="ml-sub">${fmtDate(t.date)} ${fmtTime(t.date)}${t.note ? ' • ' + esc(t.note) : ''}</div>
+              </div>
+              <div class="num" style="font-weight:800;color:${isOut ? 'var(--red-600)' : 'var(--navy-900)'};">${isOut ? '-' : '+'}${rp(t.total)}</div>
+            </div>`;
+          }).join('')}</div>` : `<div style="text-align:center;padding:26px 12px;color:var(--text-3);">
+            <div style="font-size:14px;font-weight:700;color:var(--text-2);">Tidak Ada Transaksi Ditemukan</div>
+            <div style="font-size:12px;margin-top:3px;">Catat transaksi atau pembayaran untuk ${esc(activeP.name)}.</div>
+          </div>`}
+        </div>
+      `;
+    }
   }
-  function openPartyModal() { document.getElementById('partyName').value=''; document.getElementById('partyPhone').value=''; openModal('partyModal'); }
+
+  function selectPartyDetail(id) {
+    selectedPartyId = id;
+    renderParties();
+  }
+
+  function setPartyModalRole(role) {
+    if (role === 'Pemasok' && !requireTier('bisnis', 'Data Pemasok')) return;
+    document.getElementById('partyRole').value = role;
+    const isPel = (role === 'Pelanggan');
+    document.getElementById('pmRolePelanggan').style.background = isPel ? 'var(--green-600)' : '';
+    document.getElementById('pmRolePelanggan').style.color = isPel ? '#fff' : '';
+    document.getElementById('pmRolePelanggan').style.borderColor = isPel ? 'var(--green-600)' : '';
+    document.getElementById('pmRolePemasok').style.background = !isPel ? 'var(--green-600)' : '';
+    document.getElementById('pmRolePemasok').style.color = !isPel ? '#fff' : '';
+    document.getElementById('pmRolePemasok').style.borderColor = !isPel ? 'var(--green-600)' : '';
+  }
+
+  function switchPartyModalTab(tab) {
+    const isCredit = (tab === 'credit');
+    document.getElementById('pmPaneCredit').style.display = isCredit ? 'block' : 'none';
+    document.getElementById('pmPaneExtra').style.display = !isCredit ? 'block' : 'none';
+    document.getElementById('pmTabCredit').style.background = isCredit ? 'var(--blue-600)' : '';
+    document.getElementById('pmTabCredit').style.color = isCredit ? '#fff' : '';
+    document.getElementById('pmTabExtra').style.background = !isCredit ? 'var(--blue-600)' : '';
+    document.getElementById('pmTabExtra').style.color = !isCredit ? '#fff' : '';
+  }
+
+  function setPartyBalType(kind) {
+    pmBalType = kind;
+    const isTer = (kind === 'terima');
+    document.getElementById('pmBalTerima').style.background = isTer ? 'var(--green-600)' : '';
+    document.getElementById('pmBalTerima').style.color = isTer ? '#fff' : '';
+    document.getElementById('pmBalTerima').style.borderColor = isTer ? 'var(--green-600)' : '';
+    document.getElementById('pmBalBayar').style.background = !isTer ? 'var(--red-600)' : '';
+    document.getElementById('pmBalBayar').style.color = !isTer ? '#fff' : '';
+    document.getElementById('pmBalBayar').style.borderColor = !isTer ? 'var(--red-600)' : '';
+  }
+
+  function openPartyModal(editId = null) {
+    switchPartyModalTab('credit');
+    const todayIso = new Date().toISOString().slice(0, 10);
+    if (editId) {
+      const p = (db.parties || []).find(x => x.id === editId);
+      if (!p) return;
+      document.getElementById('partyModalTitle').textContent = 'Kelola Pihak';
+      document.getElementById('editPartyId').value = p.id;
+      document.getElementById('partyName').value = p.name || '';
+      document.getElementById('partyPhone').value = p.phone || '';
+      document.getElementById('partyOpeningBal').value = p.openingBalance || 0;
+      document.getElementById('partyBalDate').value = p.balanceDate || todayIso;
+      document.getElementById('partyNote').value = p.note || '';
+      setPartyModalRole(p.role || 'Pelanggan');
+      setPartyBalType(p.balanceType || 'terima');
+    } else {
+      document.getElementById('partyModalTitle').textContent = 'Tambah Pihak Baru';
+      document.getElementById('editPartyId').value = '';
+      document.getElementById('partyName').value = '';
+      document.getElementById('partyPhone').value = '';
+      document.getElementById('partyOpeningBal').value = '0';
+      document.getElementById('partyBalDate').value = todayIso;
+      document.getElementById('partyNote').value = '';
+      setPartyModalRole('Pelanggan');
+      setPartyBalType('terima');
+    }
+    openModal('partyModal');
+  }
+
   function saveParty() {
+    const editId = document.getElementById('editPartyId').value;
     const name = document.getElementById('partyName').value.trim();
     const role = document.getElementById('partyRole').value;
-    if (role==='Pemasok' && !requireTier('bisnis','Data Pemasok')) return;
-    if (!name) return showToast('Nama wajib diisi');
-    db.parties.push({ id:'pt_'+Date.now(), name, phone:document.getElementById('partyPhone').value.trim(), role });
-    saveDB(); closeModal('partyModal'); renderAll(); showToast('Pihak ditambahkan');
-    if (pickingPartyForQE) { pickingPartyForQE = false; if (partyPickerTarget === 'confirm') setCSParty(name); else setQEParty(name); }
+    if (role === 'Pemasok' && !requireTier('bisnis', 'Data Pemasok')) return;
+    if (!name) return showToast('Nama lengkap wajib diisi');
+    const payload = {
+      name,
+      phone: document.getElementById('partyPhone').value.trim(),
+      role,
+      openingBalance: Math.max(0, parseInt(document.getElementById('partyOpeningBal').value, 10) || 0),
+      balanceDate: document.getElementById('partyBalDate').value || '',
+      balanceType: pmBalType,
+      note: document.getElementById('partyNote').value.trim()
+    };
+    if (editId) {
+      const target = db.parties.find(p => p.id === editId);
+      if (target) Object.assign(target, payload);
+      selectedPartyId = editId;
+      showToast('Data pihak diperbarui');
+    } else {
+      const newId = 'pt_' + Date.now();
+      db.parties.push({ id: newId, ...payload });
+      selectedPartyId = newId;
+      showToast('Pihak ditambahkan');
+    }
+    saveDB();
+    closeModal('partyModal');
+    renderAll();
+    if (pickingPartyForQE) {
+      pickingPartyForQE = false;
+      if (partyPickerTarget === 'confirm') setCSParty(name);
+      else setQEParty(name);
+    }
+  }
+
+  function openPartyTxModal(partyId, defaultType = 'Uang Keluar') {
+    if (!requireTier('bisnis', 'Transaksi Pihak')) return;
+    const p = (db.parties || []).find(x => x.id === partyId);
+    if (!p) return;
+    document.getElementById('ptxPartyId').value = p.id;
+    document.getElementById('ptxPartyName').value = p.name;
+    document.getElementById('ptxType').value = defaultType;
+    document.getElementById('ptxAccount').innerHTML = db.accounts.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('');
+    document.getElementById('ptxAmount').value = '';
+    document.getElementById('ptxNote').value = '';
+    openModal('partyTxModal');
+  }
+
+  function savePartyTx() {
+    if (!checkDemoLimit()) return;
+    const partyName = document.getElementById('ptxPartyName').value;
+    const type = document.getElementById('ptxType').value;
+    const accId = document.getElementById('ptxAccount').value;
+    const val = parseInt(document.getElementById('ptxAmount').value, 10) || 0;
+    const noteVal = document.getElementById('ptxNote').value.trim();
+    if (val <= 0) return showToast('Masukkan nominal lebih dari 0');
+
+    const isOut = ['Pembelian', 'Pengeluaran', 'Uang Keluar', 'Retur Penjualan'].includes(type);
+    const tx = {
+      id: (type === 'Penawaran' ? 'QT-' : 'DIRA-') + String(Date.now()).slice(-5),
+      type,
+      date: new Date().toISOString(),
+      party: partyName,
+      staff: getActiveStaffName(),
+      accountId: accId,
+      note: noteVal,
+      total: val,
+      paid: type === 'Penawaran' ? 0 : val,
+      change: 0,
+      items: [{ name: noteVal ? `${type}: ${noteVal}` : `${type} (${partyName})`, qty: 1, price: val }]
+    };
+    db.txs.unshift(tx);
+    pushLiveSyncTx(tx);
+    if (type !== 'Penawaran') {
+      const acc = db.accounts.find(a => a.id === accId);
+      if (acc) acc.balance = Number(acc.balance || 0) + (isOut ? -val : val);
+    }
+    incDemoUsed();
+    saveDB();
+    closeModal('partyTxModal');
+    renderAll();
+    showToast(`${type} untuk ${partyName} dicatat`);
   }
 
   // --- INVENTARIS & KATEGORI ---
