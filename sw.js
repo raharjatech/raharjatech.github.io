@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dira-pos-v3.1-allinone';
+const CACHE_NAME = 'dira-pos-v3.3-allinone';
 const ASSETS = ['./', './index.html', './manifest.json', './dira-icon-192.png', './dira-icon-512.png'];
 
 self.addEventListener('install', (e) => {

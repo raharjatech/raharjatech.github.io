@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="google" content="notranslate" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#0B1F3A" />
+  <meta name="theme-color" content="#081C38" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Dira POS — Kasir & Pembukuan UMKM</title>
@@ -87,6 +87,7 @@
       padding: 5px 10px; border-radius: 999px; border: none;
       font-family: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer;
     }
+    .tier-demo { background: #FEE2E2; color: #DC2626; }
     .tier-starter { background: var(--blue-50); color: var(--blue-600); }
     .tier-bisnis { background: var(--amber-50); color: var(--amber-600); }
     .tier-profesional, .tier-ultimate { background: var(--navy-900); color: #7DD3FC; }
@@ -576,6 +577,7 @@
     html[data-theme="dark"] .btn-google { background: var(--surface-2); color: var(--text-1); border-color: var(--border); }
     html[data-theme="dark"] .receipt-paper { background: #FFFDF9; color: #0F172A; }
     html[data-theme="dark"] .sidebar { background: #0B1220; border-right: 1px solid #1E293B; }
+    html[data-theme="dark"] .tier-demo { background: rgba(220, 38, 38, 0.25); color: #FCA5A5; }
     html[data-theme="dark"] .tier-starter { background: rgba(37, 99, 235, 0.22); color: #93C5FD; }
     html[data-theme="dark"] .tier-bisnis { background: rgba(217, 119, 6, 0.22); color: #FCD34D; }
     html[data-theme="dark"] .tier-profesional, html[data-theme="dark"] .tier-ultimate { background: #1E3A8A; color: #7DD3FC; }
@@ -728,7 +730,7 @@
 <div class="login-screen" id="loginScreen">
   <div class="login-wrapper">
   <div class="login-card">
-    <div class="login-logo" style="padding:0;overflow:hidden;"><svg viewBox="0 0 100 100" width="100%" height="100%" style="display:block;border-radius:inherit"><defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#04122B"/><stop offset="100%" stop-color="#0B3863"/></linearGradient></defs><rect width="100" height="100" fill="url(#dg)"/><path d="M23.5,22.5 H49 A27.5,27.5 0 0,1 49,77.5 H40.7 A3.2,3.2 0 0,1 37.5,74.3 V64 H49 A14,14 0 0,0 49,36 H26.7 A3.2,3.2 0 0,1 23.5,32.8 Z" fill="#FFFFFF"/><path d="M23.5,50 H34.3 A3.2,3.2 0 0,1 37.5,53.2 V64 H26.7 A3.2,3.2 0 0,1 23.5,60.8 Z" fill="#0CEBFF"/></svg></div>
+    <div class="login-logo" style="padding:0;overflow:hidden;"><svg viewBox="0 0 100 100" width="100%" height="100%" style="display:block;border-radius:inherit"><rect width="100" height="100" fill="#081C38"/><path d="M23.5,22.5 H49 A27.5,27.5 0 0,1 49,77.5 H40.7 A3.2,3.2 0 0,1 37.5,74.3 V64 H49 A14,14 0 0,0 49,36 H26.7 A3.2,3.2 0 0,1 23.5,32.8 Z" fill="#FFFFFF"/><path d="M23.5,50 H34.3 A3.2,3.2 0 0,1 37.5,53.2 V64 H26.7 A3.2,3.2 0 0,1 23.5,60.8 Z" fill="#0CEBFF"/></svg></div>
     <div style="text-align:center;margin-bottom:20px;">
       <div style="font-size:20px;font-weight:800;color:var(--navy-900);letter-spacing:-0.02em;">Dira POS</div>
       <div style="font-size:12.5px;color:var(--text-2);margin-top:3px;">Masuk untuk mulai transaksi kasir</div>
@@ -742,7 +744,7 @@
       <input type="password" inputmode="numeric" maxlength="6" id="lsPinInput" class="input num" placeholder="Masukkan PIN..." onkeydown="if(event.key==='Enter') doAppLogin()" />
     </div>
     <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);margin-bottom:14px;cursor:pointer;">
-      <input type="checkbox" id="lsRemember" checked style="width:16px;height:16px;accent-color:var(--blue-600);" />
+      <input type="checkbox" id="lsRemember" style="width:16px;height:16px;accent-color:var(--blue-600);" />
       Ingat saya di perangkat ini
     </label>
     <button type="button" class="btn btn-primary btn-block" onclick="doAppLogin()">Masuk ke Kasir</button>
@@ -777,7 +779,7 @@
   <!-- Desktop Sidebar (v2.8 Full 3-Group Navigation) -->
   <aside class="sidebar">
     <div style="display:flex;align-items:center;gap:10px;padding:4px 8px 14px 8px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:6px;flex-shrink:0;">
-      <div class="avatar-v" style="padding:0;overflow:hidden;"><svg viewBox="0 0 100 100" width="100%" height="100%" style="display:block;border-radius:inherit"><defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#04122B"/><stop offset="100%" stop-color="#0B3863"/></linearGradient></defs><rect width="100" height="100" fill="url(#dg)"/><path d="M23.5,22.5 H49 A27.5,27.5 0 0,1 49,77.5 H40.7 A3.2,3.2 0 0,1 37.5,74.3 V64 H49 A14,14 0 0,0 49,36 H26.7 A3.2,3.2 0 0,1 23.5,32.8 Z" fill="#FFFFFF"/><path d="M23.5,50 H34.3 A3.2,3.2 0 0,1 37.5,53.2 V64 H26.7 A3.2,3.2 0 0,1 23.5,60.8 Z" fill="#0CEBFF"/></svg></div>
+      <div class="avatar-v" style="padding:0;overflow:hidden;"><svg viewBox="0 0 100 100" width="100%" height="100%" style="display:block;border-radius:inherit"><rect width="100" height="100" fill="#081C38"/><path d="M23.5,22.5 H49 A27.5,27.5 0 0,1 49,77.5 H40.7 A3.2,3.2 0 0,1 37.5,74.3 V64 H49 A14,14 0 0,0 49,36 H26.7 A3.2,3.2 0 0,1 23.5,32.8 Z" fill="#FFFFFF"/><path d="M23.5,50 H34.3 A3.2,3.2 0 0,1 37.5,53.2 V64 H26.7 A3.2,3.2 0 0,1 23.5,60.8 Z" fill="#0CEBFF"/></svg></div>
       <div style="min-width:0;">
         <div style="font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="sbStoreName">Dira POS</div>
         <div style="font-size:11px;color:#7DD3FC;font-weight:600;" id="sbTierLabel">Paket Profesional</div>
@@ -846,7 +848,7 @@
 
     <div style="padding-top:10px;border-top:1px solid rgba(255,255,255,0.1);flex-shrink:0;">
       <button class="btn btn-primary btn-block btn-sm" style="margin-bottom:8px;" onclick="openUpgradePage()">👑 Upgrade Paket</button>
-      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.0 • Raharja Tech</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,0.45);padding:0 4px;">Dira POS v3.3 • Raharja Tech</div>
     </div>
   </aside>
 
@@ -870,7 +872,7 @@
     <!-- Mobile Topbar -->
     <header class="topbar">
       <div class="brand-row">
-        <div class="avatar-v" style="padding:0;overflow:hidden;"><svg viewBox="0 0 100 100" width="100%" height="100%" style="display:block;border-radius:inherit"><defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#04122B"/><stop offset="100%" stop-color="#0B3863"/></linearGradient></defs><rect width="100" height="100" fill="url(#dg)"/><path d="M23.5,22.5 H49 A27.5,27.5 0 0,1 49,77.5 H40.7 A3.2,3.2 0 0,1 37.5,74.3 V64 H49 A14,14 0 0,0 49,36 H26.7 A3.2,3.2 0 0,1 23.5,32.8 Z" fill="#FFFFFF"/><path d="M23.5,50 H34.3 A3.2,3.2 0 0,1 37.5,53.2 V64 H26.7 A3.2,3.2 0 0,1 23.5,60.8 Z" fill="#0CEBFF"/></svg></div>
+        <div class="avatar-v" style="padding:0;overflow:hidden;"><svg viewBox="0 0 100 100" width="100%" height="100%" style="display:block;border-radius:inherit"><rect width="100" height="100" fill="#081C38"/><path d="M23.5,22.5 H49 A27.5,27.5 0 0,1 49,77.5 H40.7 A3.2,3.2 0 0,1 37.5,74.3 V64 H49 A14,14 0 0,0 49,36 H26.7 A3.2,3.2 0 0,1 23.5,32.8 Z" fill="#FFFFFF"/><path d="M23.5,50 H34.3 A3.2,3.2 0 0,1 37.5,53.2 V64 H26.7 A3.2,3.2 0 0,1 23.5,60.8 Z" fill="#0CEBFF"/></svg></div>
         <div class="brand-name" id="topStoreName">Dira POS</div>
       </div>
       <div style="display:flex;align-items:center;gap:7px;">
@@ -1386,10 +1388,13 @@
     <button class="btn btn-green btn-block" style="margin-bottom:14px;" id="btnUpgradeWA" onclick="orderUpgradeWA()">Upgrade Paket via WhatsApp</button>
 
     <div class="card">
-      <div style="font-size:13.5px;font-weight:700;margin-bottom:4px;">Sudah Punya Kode Lisensi?</div>
-      <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">Masukkan kode aktivasi dari Raharja Tech untuk langsung membuka fitur paket Anda.</div>
+      <div style="font-size:13.5px;font-weight:700;margin-bottom:4px;">Aktivasi Lisensi Resmi (Per Nama Toko)</div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">Masukkan <b>Nama Usaha</b> persis seperti saat pemesanan beserta <b>Kode Lisensi Unik</b> dari Raharja Tech.</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <input type="text" id="licenseStoreInput" class="input" placeholder="Nama Usaha (contoh: Barbershop Ahmad 354)" />
+      </div>
       <div style="display:flex;gap:8px;">
-        <input type="text" id="licenseInput" class="input" placeholder="Contoh: DIRA-BISNIS-2026" style="text-transform:uppercase;" />
+        <input type="text" id="licenseInput" class="input" placeholder="Kode: DIRA-BS-XXXX-YYYY" style="text-transform:uppercase;font-weight:700;" />
         <button class="btn btn-navy" onclick="activateLicense()">Aktifkan</button>
       </div>
     </div>
@@ -1754,14 +1759,67 @@
 
 <script>
   const STORE_KEY = 'velopos_allinone_v2';
-  const TIER_RANK = { starter: 1, bisnis: 2, profesional: 3, ultimate: 3 };
-  // License Codes for Raharja Tech
-  const LICENSE_CODES = {
-    'DIRA-STARTER-2026': 'starter',
-    'DIRA-BISNIS-2026':  'bisnis',
-    'DIRA-PROFESIONAL-2026':'profesional',
-    'DIRA-ULTIMATE-2026':'profesional'
-  };
+  const DEMO_COUNT_KEY = 'dira_demo_tx_used_v31';
+  const DEMO_TX_LIMIT = 10;
+  const TIER_RANK = { demo: 1, starter: 1, bisnis: 2, profesional: 3, ultimate: 3 };
+  const DIRA_SECRET = 'RHRJ#DIRA-POS-2026!BDG';
+  const DIRA_ALPHA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+  function normalizeStoreName(s) {
+    return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  }
+  function computeDiraLicense(storeName, tier) {
+    const norm = normalizeStoreName(storeName);
+    const tMap = { starter: 'ST', bisnis: 'BS', profesional: 'PR' };
+    const tCode = tMap[tier];
+    if (!tCode || norm.length < 3) return null;
+    const payload = `${DIRA_SECRET}|${tCode}|${norm}`;
+    let h1 = 0x811c9dc5 >>> 0;
+    let h2 = 0x9e3779b9 >>> 0;
+    for (let i = 0; i < payload.length; i++) {
+      const c = payload.charCodeAt(i);
+      h1 ^= c;
+      h1 = Math.imul(h1, 0x01000193) >>> 0;
+      h2 ^= (c + ((i + 1) * 31)) >>> 0;
+      h2 = Math.imul(h2, 0x85ebca6b) >>> 0;
+      h2 = ((h2 << 13) | (h2 >>> 19)) >>> 0;
+    }
+    const enc = (val) => {
+      let out = '', v = val >>> 0;
+      for (let j = 0; j < 4; j++) { out += DIRA_ALPHA[v & 31]; v = v >>> 5; }
+      return out;
+    };
+    return `DIRA-${tCode}-${enc(h1)}-${enc(h2)}`;
+  }
+  function verifyDiraLicense(storeName, code) {
+    const cleanCode = String(code || '').trim().toUpperCase();
+    for (const tier of ['starter', 'bisnis', 'profesional']) {
+      if (computeDiraLicense(storeName, tier) === cleanCode) return tier;
+    }
+    return null;
+  }
+  function isDemoMode() { return !db || !db.tier || db.tier === 'demo'; }
+  function getDemoUsed() {
+    const fromLs = parseInt(localStorage.getItem(DEMO_COUNT_KEY) || '0', 10) || 0;
+    const fromDb = (db && db.demoUsed) ? db.demoUsed : 0;
+    return Math.max(fromLs, fromDb);
+  }
+  function incDemoUsed() {
+    if (!isDemoMode()) return;
+    const next = getDemoUsed() + 1;
+    db.demoUsed = next;
+    localStorage.setItem(DEMO_COUNT_KEY, String(next));
+  }
+  function checkDemoLimit() {
+    if (!isDemoMode()) return true;
+    const used = getDemoUsed();
+    if (used >= DEMO_TX_LIMIT) {
+      showToast(`Batas ${DEMO_TX_LIMIT} transaksi Mode Demo habis. Aktivasi lisensi untuk lanjut!`);
+      openUpgradePage('starter');
+      return false;
+    }
+    return true;
+  }
 
   let db = null;
   let cart = [];
@@ -1792,7 +1850,8 @@
   function getDummyDB() {
     const now = Date.now(), h = 3600000;
     return {
-      tier: 'starter',
+      tier: 'demo',
+      demoUsed: 0,
       settings: { name: 'Dira Store Demo', address: 'Jl. Cipaganti No. 45, Bandung', phone: '0878-6849-5852', paper: '58mm', footer: 'Terima kasih! Powered by Dira POS' },
       categories: ['Umum', 'Minuman', 'Makanan', 'Jasa', 'Bengkel', 'Laundry'],
       accounts: [
@@ -1831,7 +1890,8 @@
     if (!db.accounts.some(a => a.id === 'acc_cash')) db.accounts.unshift({ id: 'acc_cash', name: 'Cash', balance: 0 });
     if (!db.accounts.some(a => a.id === 'acc_qris')) db.accounts.push({ id: 'acc_qris', name: 'QRIS', balance: 0 });
     if (!db.accounts.some(a => a.id === 'acc_transfer')) db.accounts.push({ id: 'acc_transfer', name: 'Transfer Bank', balance: 0 });
-    if (!db._tierLockedManual) db.tier = 'starter';
+    if (!db._tierLockedManual) db.tier = 'demo';
+    if (typeof db.demoUsed !== 'number') db.demoUsed = 0;
     if (!db.staffs || !db.staffs.length) db.staffs = [{ id: 'st_owner', name: 'Owner / Admin', role: 'Admin', pin: '0000' }];
     if (!db.activeStaffId) db.activeStaffId = db.staffs[0].id;
     if (db.settings) {
@@ -1855,12 +1915,14 @@
     const name = db.settings.name || 'Dira POS';
     document.getElementById('topStoreName').textContent = name;
     document.getElementById('sbStoreName').textContent = name;
-    const tName = (db.tier || 'starter').toUpperCase();
-    document.getElementById('sbTierLabel').textContent = 'Paket ' + tName;
-    document.getElementById('moreTierBadge').textContent = 'PAKET AKTIF: ' + tName;
+    const curTier = db.tier || 'demo';
+    const remDemo = Math.max(0, DEMO_TX_LIMIT - getDemoUsed());
+    const tName = curTier === 'demo' ? `DEMO (${remDemo}/${DEMO_TX_LIMIT})` : curTier.toUpperCase();
+    document.getElementById('sbTierLabel').textContent = curTier === 'demo' ? `Mode Demo • Sisa ${remDemo} tx` : 'Paket ' + tName;
+    document.getElementById('moreTierBadge').textContent = curTier === 'demo' ? `MODE DEMO (SISA ${remDemo}/${DEMO_TX_LIMIT} TRANSAKSI)` : 'PAKET AKTIF: ' + tName;
     const pill = document.getElementById('topTierPill');
     pill.textContent = tName + ' ▾';
-    pill.className = 'tier-pill tier-' + (db.tier || 'starter');
+    pill.className = 'tier-pill tier-' + curTier;
 
     const actSt = (db.staffs || []).find(s => s.id === db.activeStaffId) || { name: 'Owner / Admin', role: 'Admin' };
     const stSub = document.getElementById('activeStaffSub');
@@ -1870,7 +1932,7 @@
     const dGreet = document.getElementById('deskGreeting');
     if (dGreet) dGreet.textContent = 'Selamat Datang, ' + actSt.name;
     const dTier = document.getElementById('deskTierPill');
-    if (dTier) { dTier.textContent = tName + ' ▾'; dTier.className = 'tier-pill tier-' + (db.tier || 'starter'); }
+    if (dTier) { dTier.textContent = tName + ' ▾'; dTier.className = 'tier-pill tier-' + curTier; }
     const bStaf = document.getElementById('badgeLockStaf');
     if (bStaf) bStaf.innerHTML = hasTier('profesional') ? '' : '<span class="lock-badge">🔒 PRO</span>';
     const bGS = document.getElementById('badgeLockGS');
@@ -2090,6 +2152,7 @@
   }
 
   function submitQuickEntry() {
+    if (!checkDemoLimit()) return;
     calcKey('=');
     const val = parseInt(calcStr, 10);
     if (!val || val <= 0) return showToast('Masukkan nominal lebih dari 0');
@@ -2112,7 +2175,7 @@
       const acc = db.accounts.find(a => a.id === accId);
       if (acc) acc.balance = Number(acc.balance||0) + (isOut ? -val : val);
     }
-    saveDB(); closeSubpage('spQuickEntry'); renderAll();
+    incDemoUsed(); saveDB(); closeSubpage('spQuickEntry'); renderAll();
     showToast(qeType + ' berhasil dicatat');
     if (qeType === 'Penjualan' || isQuote) openReceipt(tx);
   }
@@ -2263,6 +2326,7 @@
   }
 
   function finalizeConfirmSale(shouldPrint) {
+    if (!checkDemoLimit()) return;
     const sub = cart.reduce((s,x)=>s+x.qty*x.price, 0);
     const grand = Math.max(0, sub - csDiscount + csTax + csExtra);
     const accId = document.getElementById('csAccount').value;
@@ -2289,6 +2353,7 @@
     const acc = db.accounts.find(a => a.id === accId);
     if (acc) acc.balance = Number(acc.balance||0) + grand;
     cart = [];
+    incDemoUsed();
     saveDB();
     closeSubpage('spConfirmSale');
     closeSubpage('spFastPOS');
@@ -2330,6 +2395,7 @@
     document.getElementById('chkChange').textContent = paid >= tot ? rp(paid - tot) : 'Kurang ' + rp(tot - paid);
   }
   function completeFastPOS() {
+    if (!checkDemoLimit()) return;
     const tot = cart.reduce((s,x)=>s+x.qty*x.price, 0);
     const paid = parseInt(document.getElementById('chkPaid').value, 10) || 0;
     if (paid < tot) return showToast('Uang diterima kurang');
@@ -2348,7 +2414,7 @@
     db.txs.unshift(tx);
     const acc = db.accounts.find(a => a.id === accId);
     if (acc) acc.balance = Number(acc.balance||0) + tot;
-    cart = []; saveDB();
+    cart = []; incDemoUsed(); saveDB();
     closeModal('checkoutModal'); closeSubpage('spFastPOS'); renderAll();
     showToast('Transaksi berhasil'); openReceipt(tx);
   }
@@ -3146,6 +3212,8 @@
   // --- UPGRADE & LICENSE ---
   function openUpgradePage(tab = 'bisnis') {
     selectUpgradeTab(tab);
+    const sEl = document.getElementById('licenseStoreInput');
+    if (sEl && db.settings && db.settings.name && db.settings.name !== 'Dira Store Demo') sEl.value = db.settings.name;
     document.getElementById('spUpgrade').classList.add('open');
   }
   function selectUpgradeTab(t) {
@@ -3186,18 +3254,27 @@
     window.open(`https://wa.me/6287868495852?text=${encodeURIComponent(msg)}`, '_blank');
   }
   function activateLicense() {
+    const storeName = (document.getElementById('licenseStoreInput').value || '').trim();
     const code = (document.getElementById('licenseInput').value || '').trim().toUpperCase();
-    const newTier = LICENSE_CODES[code];
-    if (!newTier) return showToast('Kode lisensi tidak valid');
-    db.tier = newTier; db._tierLockedManual = true; saveDB(); renderAll();
+    if (normalizeStoreName(storeName).length < 3) return showToast('Masukkan Nama Usaha minimal 3 karakter');
+    const newTier = verifyDiraLicense(storeName, code);
+    if (!newTier) return showToast('Kode lisensi tidak cocok dengan Nama Usaha ini');
+    db.tier = newTier;
+    db._tierLockedManual = true;
+    db.settings.name = storeName;
+    db.license = { code, store: storeName, tier: newTier, activatedAt: new Date().toISOString() };
+    saveDB(); renderAll();
     document.getElementById('licenseInput').value = '';
     closeSubpage('spUpgrade');
-    showToast(`Selamat! Paket ${newTier.toUpperCase()} aktif`);
+    showToast(`Aktif! Paket ${newTier.toUpperCase()} untuk ${storeName}`);
   }
 
   // --- PROFILE, RECEIPT, BACKUP ---
   function openProfileModal() {
-    document.getElementById('setName').value = db.settings.name || '';
+    const nameEl = document.getElementById('setName');
+    nameEl.value = db.settings.name || '';
+    nameEl.disabled = !!(db.license && db.license.store);
+    nameEl.title = nameEl.disabled ? 'Nama usaha terkunci sesuai lisensi resmi' : '';
     document.getElementById('setAddress').value = db.settings.address || '';
     document.getElementById('setPhone').value = db.settings.phone || '';
     document.getElementById('setPaper').value = db.settings.paper || '58mm';
@@ -3206,7 +3283,7 @@
   }
   function saveProfile() {
     db.settings = {
-      name: document.getElementById('setName').value.trim() || 'Dira POS',
+      name: (db.license && db.license.store) ? db.license.store : (document.getElementById('setName').value.trim() || 'Dira POS'),
       address: document.getElementById('setAddress').value.trim(),
       phone: document.getElementById('setPhone').value.trim(),
       paper: document.getElementById('setPaper').value,
@@ -3233,6 +3310,7 @@
       <div class="r-row"><span>Kembali</span><span>${rp(tx.change)}</span></div>
       <div class="r-hr"></div>
       <div class="r-center">${esc(db.settings.footer||'Terima kasih!')}</div>
+      ${isDemoMode() ? '<div class="r-center r-bold" style="margin-top:4px;">[VERSI DEMO - DIRA POS]</div>' : ''}
     `;
     document.getElementById('receiptPreview').innerHTML = html;
     document.getElementById('printArea').innerHTML = html;
@@ -3300,91 +3378,156 @@
 
   if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 
-  // --- ANDROID BACK BUTTON & NAVIGATION HISTORY ---
+  // --- ANDROID BACK BUTTON & NAVIGATION HISTORY (v3.3 ROCK-SOLID PWA/APK) ---
   let currentTab = 'beranda';
+  let tabHistory = ['beranda'];
+  let subpageStack = [];
   let allowRealExit = false;
 
-  // Trap initial history state so pressing Back on Home doesn't immediately close app
-  try { window.history.replaceState({ velo: 'root' }, ''); window.history.pushState({ velo: 'app' }, ''); } catch(e) {}
+  function armBackTrap() {
+    if (allowRealExit) return;
+    try {
+      if (!window.history.state || window.history.state.diraTrap !== 'armed') {
+        if (!window.history.state || window.history.state.diraTrap !== 'base') {
+          window.history.replaceState({ diraTrap: 'base' }, '');
+        }
+        window.history.pushState({ diraTrap: 'armed' }, '');
+      }
+    } catch (e) {}
+  }
+
+  // Arm on load AND re-arm on first user interaction (bypasses Chrome History Manipulation Intervention)
+  armBackTrap();
+  ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, armBackTrap, { passive: true, once: true });
+  });
 
   const _origSwitchTab = switchTab;
   switchTab = function(tab) {
     if (tab !== currentTab) {
       currentTab = tab;
-      if (tab !== 'beranda') {
-        try { window.history.pushState({ velo: 'tab', tab }, ''); } catch(e) {}
+      if (tab === 'beranda') {
+        tabHistory = ['beranda'];
+      } else {
+        tabHistory = tabHistory.filter(t => t !== tab);
+        tabHistory.push(tab);
       }
     }
+    armBackTrap();
     _origSwitchTab(tab);
   };
 
   const _origOpenModal = openModal;
   openModal = function(id) {
-    if (id !== 'exitModal') {
-      try { window.history.pushState({ velo: 'modal', id }, ''); } catch(e) {}
-    }
+    armBackTrap();
     _origOpenModal(id);
   };
 
-  // Patch subpage openers to push history
-  ['openQuickEntry', 'openFastPOS', 'openConfirmSalePage', 'openReportsPage', 'openReportGroup', 'openReportDetail', 'openAccountsPage', 'openGoogleSheetsPage', 'openUpgradePage'].forEach(fnName => {
+  const _origCloseSubpage = closeSubpage;
+  closeSubpage = function(id) {
+    subpageStack = subpageStack.filter(x => x !== id);
+    _origCloseSubpage(id);
+  };
+
+  // Track exact subpage opening order so Back always closes the topmost subpage
+  const _subpageMap = {
+    openQuickEntry: 'spQuickEntry',
+    openFastPOS: 'spFastPOS',
+    openConfirmSalePage: 'spConfirmSale',
+    openReportsPage: 'spReports',
+    openReportGroup: 'spReportGroup',
+    openReportDetail: 'spReportDetail',
+    openAccountsPage: 'spAccounts',
+    openGoogleSheetsPage: 'spGoogleSheets',
+    openUpgradePage: 'spUpgrade'
+  };
+  Object.keys(_subpageMap).forEach(fnName => {
     const orig = window[fnName];
+    const spId = _subpageMap[fnName];
     if (typeof orig === 'function') {
       window[fnName] = function(...args) {
-        try { window.history.pushState({ velo: 'subpage', fn: fnName }, ''); } catch(e) {}
-        return orig.apply(this, args);
+        armBackTrap();
+        const res = orig.apply(this, args);
+        const el = document.getElementById(spId);
+        if (el && el.classList.contains('open')) {
+          subpageStack = subpageStack.filter(x => x !== spId);
+          subpageStack.push(spId);
+        }
+        return res;
       };
     }
   });
 
-  window.addEventListener('popstate', (e) => {
+  window.addEventListener('popstate', () => {
     if (allowRealExit) return;
 
-    // 1. If exit modal is open, close it
+    // 1. If Login Screen is open -> show exit confirmation
+    const loginEl = document.getElementById('loginScreen');
     const exitEl = document.getElementById('exitModal');
     if (exitEl && exitEl.classList.contains('open')) {
       exitEl.classList.remove('open');
-      try { window.history.pushState({ velo: 'app' }, ''); } catch(err) {}
+      armBackTrap();
       return;
     }
 
-    // 2. If any other modal is open, close the topmost modal
-    const openModals = Array.from(document.querySelectorAll('.modal-overlay.open'));
+    // 2. If any modal is open, close the topmost modal
+    const openModals = Array.from(document.querySelectorAll('.modal-overlay.open')).filter(m => m.id !== 'exitModal');
     if (openModals.length > 0) {
       openModals[openModals.length - 1].classList.remove('open');
+      armBackTrap();
       return;
     }
 
-    // 3. If any subpage is open, close the topmost subpage
+    // 3. If Login Screen is covering app, ask to exit
+    if (loginEl && loginEl.classList.contains('open')) {
+      exitEl.classList.add('open');
+      armBackTrap();
+      return;
+    }
+
+    // 4. If any subpage is open, close the most recently opened subpage
+    while (subpageStack.length > 0) {
+      const topId = subpageStack.pop();
+      const topEl = document.getElementById(topId);
+      if (topEl && topEl.classList.contains('open')) {
+        topEl.classList.remove('open');
+        armBackTrap();
+        return;
+      }
+    }
     const openSubs = Array.from(document.querySelectorAll('.subpage.open'));
     if (openSubs.length > 0) {
       openSubs[openSubs.length - 1].classList.remove('open');
+      armBackTrap();
       return;
     }
 
-    // 4. If not on Beranda tab, go back to Beranda
+    // 5. If not on Beranda, go back to previous tab (until Beranda)
     if (currentTab !== 'beranda') {
-      currentTab = 'beranda';
-      _origSwitchTab('beranda');
-      try { window.history.pushState({ velo: 'app' }, ''); } catch(err) {}
+      tabHistory.pop();
+      const prevTab = tabHistory.length > 0 ? tabHistory[tabHistory.length - 1] : 'beranda';
+      currentTab = prevTab;
+      _origSwitchTab(prevTab);
+      armBackTrap();
       return;
     }
 
-    // 5. Already on Beranda (Home) -> Show Exit Confirmation Modal
-    try { window.history.pushState({ velo: 'app' }, ''); } catch(err) {}
+    // 6. Already on Beranda (Home) -> Show Exit Confirmation Modal ("Anda yakin ingin keluar?")
     exitEl.classList.add('open');
+    armBackTrap();
   });
 
   function cancelExit() {
     document.getElementById('exitModal').classList.remove('open');
+    armBackTrap();
   }
   function confirmExit() {
     allowRealExit = true;
     document.getElementById('exitModal').classList.remove('open');
-    window.history.go(-2);
-    setTimeout(() => { window.close(); }, 150);
+    // Pop all trapped history entries to exit PWA/APK cleanly
+    window.history.go(-Math.max(2, window.history.length));
+    setTimeout(() => { try { window.close(); } catch(e) {} }, 150);
   }
-
 
   // --- LOGIN SCREEN (USERNAME + PIN + GOOGLE) (v2.7) ---
   function showLoginScreen() {
@@ -3406,8 +3549,8 @@
     if (st.pin !== pin) return showToast('PIN salah! (Default Owner: 0000)');
     db.activeStaffId = st.id;
     saveDB();
-    if (remember) localStorage.setItem('velopos_logged_in', '1');
-    else sessionStorage.setItem('velopos_logged_in', '1');
+    if (remember) localStorage.setItem('dirapos_logged_in_v33', '1');
+    else sessionStorage.setItem('dirapos_logged_in_v33', '1');
     document.getElementById('loginScreen').classList.remove('open');
     renderAll();
     showToast('Selamat datang, ' + st.name);
@@ -3420,15 +3563,15 @@
     if (!clean || !clean.includes('@')) return showToast('Masukkan alamat email Google yang valid');
     db.settings.googleEmail = clean;
     saveDB();
-    localStorage.setItem('velopos_logged_in', '1');
+    localStorage.setItem('dirapos_logged_in_v33', '1');
     document.getElementById('loginScreen').classList.remove('open');
     renderAll();
     showToast('Masuk sebagai ' + clean);
   }
 
   function logoutApp() {
-    localStorage.removeItem('velopos_logged_in');
-    sessionStorage.removeItem('velopos_logged_in');
+    localStorage.removeItem('dirapos_logged_in_v33');
+    sessionStorage.removeItem('dirapos_logged_in_v33');
     showLoginScreen();
   }
 
@@ -3757,7 +3900,7 @@
 
   applyTheme(localStorage.getItem('velopos_theme') || 'light');
   init();
-  if (!localStorage.getItem('velopos_logged_in') && !sessionStorage.getItem('velopos_logged_in')) showLoginScreen();
+  if (!localStorage.getItem('dirapos_logged_in_v33') && !sessionStorage.getItem('dirapos_logged_in_v33')) showLoginScreen();
 </script>
 </body>
 </html>
